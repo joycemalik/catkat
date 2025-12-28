@@ -1,0 +1,279 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Quicksand:wght@400;600;700&family=Fraunces:opsz,wght@9..144,400;700;900&family=VT323&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-text-cozy: #4A403A;
+  --color-bg-light: #FFF9F0;
+  --shadow-contact: rgba(74, 64, 58, 0.4);
+  --shadow-diffuse: rgba(74, 64, 58, 0.1);
+}
+
+/* Floor Stage Effect */
+.floor-stage {
+  border-radius: 50% / 20%;
+  box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.1) inset;
+}
+
+.font-pixel {
+  font-family: 'VT323', monospace;
+}
+
+body {
+
+  font-family: 'Quicksand', sans-serif;
+  color: var(--color-text-cozy);
+  overflow: hidden;
+  /* Prevent scrolling during animations */
+}
+
+/* Headings use the Soft Serif */
+h1,
+h2,
+h3,
+.font-serif {
+  font-family: 'Fraunces', serif;
+  /* Closest free Google Font match to Recoleta/Cooper */
+}
+
+/* --- ATMOSPHERE & TEXTURE --- */
+.bg-noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.bg-golden-hour {
+  background: radial-gradient(circle at 50% 50%, #FFF9F0 0%, #F5E6D3 60%, #E6D0B3 100%);
+}
+
+.god-ray {
+  position: absolute;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+  top: -50%;
+  left: -25%;
+  transform: rotate(-15deg);
+  pointer-events: none;
+  filter: blur(40px);
+  z-index: 10;
+  animation: drift 10s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from {
+    transform: rotate(-15deg) translateY(0);
+    opacity: 0.5;
+  }
+
+  to {
+    transform: rotate(-12deg) translateY(20px);
+    opacity: 0.3;
+  }
+}
+
+/* --- JUICE: SQUISHY BUTTONS --- */
+.btn-squish {
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-squish:active {
+  transform: scale(0.95);
+}
+
+.btn-squish:hover {
+  transform: scale(1.05);
+}
+
+/* --- SHADOWS --- */
+.shadow-contact {
+  background: radial-gradient(ellipse at center, var(--shadow-contact) 0%, transparent 70%);
+}
+
+.shadow-diffuse {
+  background: radial-gradient(ellipse at center, var(--shadow-diffuse) 0%, transparent 70%);
+  transform: scale(2, 0.5) translateY(20px);
+  filter: blur(8px);
+}
+
+/* --- CHAT BUBBLE POP --- */
+@keyframes pop-in-elastic {
+  0% {
+    transform: scale(0) translateY(20px);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.1) translateY(-10px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-pop-elastic {
+  animation: pop-in-elastic 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* --- OLD ANIMATIONS (Preserved but categorized) --- */
+/* --- PHASE 5: JUICE & STAGE --- */
+
+@keyframes rain {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.animate-rain-fast {
+  animation: rain 0.5s linear infinite;
+}
+
+.animate-rain-medium {
+  animation: rain 1s linear infinite;
+}
+
+.animate-rain-slow {
+  animation: rain 2s linear infinite;
+}
+
+@keyframes breathe {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 6s ease-in-out infinite;
+}
+
+@keyframes waddle {
+  0% {
+    transform: rotate(0deg) translateY(0);
+  }
+
+  25% {
+    transform: rotate(-5deg) translateY(-5px);
+  }
+
+  50% {
+    transform: rotate(0deg) translateY(0);
+  }
+
+  75% {
+    transform: rotate(5deg) translateY(-5px);
+  }
+
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+}
+
+.animate-waddle {
+  animation: waddle 0.6s infinite linear;
+}
+
+@keyframes boop {
+  0% {
+    transform: scale(1, 1);
+  }
+
+  30% {
+    transform: scale(1.15, 0.85);
+  }
+
+  /* Squash */
+  60% {
+    transform: scale(0.9, 1.1);
+  }
+
+  /* Stretch */
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+.animate-boop {
+  animation: boop 0.4s ease-out;
+}
+
+@keyframes sway {
+  0% {
+    transform: rotate(-3deg);
+  }
+
+  100% {
+    transform: rotate(3deg);
+  }
+}
+
+.animate-sway {
+  animation: sway 4s ease-in-out infinite alternate;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-scanlines {
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.3) 50%);
+  background-size: 100% 4px;
+  animation: scanline 0.2s linear infinite;
+}
+
+.glitch-text {
+  animation: glitch 1s infinite alternate;
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+
+  20% {
+    transform: translate(-2px, 2px);
+  }
+
+  40% {
+    transform: translate(-2px, -2px);
+  }
+
+  60% {
+    transform: translate(2px, 2px);
+  }
+
+  80% {
+    transform: translate(2px, -2px);
+  }
+
+  100% {
+    transform: translate(0);
+  }
+}
