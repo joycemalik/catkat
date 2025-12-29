@@ -19,6 +19,55 @@ const LAYERS = {
     CURSOR: 100    // Particles, Custom Cursor
 };
 
+const MobileBlocker = () => (
+    <div className="fixed inset-0 z-[9999] bg-[#FDF6E3] flex flex-col items-center justify-center p-8 text-center select-none">
+        {/* Animated Sleeping Icon */}
+        <div className="relative mb-8">
+            <div className="text-6xl animate-bounce">🌙</div>
+            <div className="absolute -top-4 right-0 text-2xl text-stone-400 animate-pulse">z</div>
+            <div className="absolute -top-8 right-2 text-xl text-stone-400 animate-pulse" style={{ animationDelay: '0.5s' }}>z</div>
+        </div>
+
+        <h1 className="text-3xl font-serif text-[#5D4037] mb-4 font-bold">Shhh... Mochi is napping.</h1>
+
+        <p className="text-[#8D6E63] font-serif text-lg max-w-md leading-relaxed">
+            This screen is a little too small for his big dreams.
+            <br />
+            <br />
+            Please visit us on a <span className="font-bold text-[#5D4037] border-b-2 border-[#5D4037]">Desktop Computer</span> to wake him up.
+        </p>
+
+        {/* Decorative Divider */}
+        <div className="w-16 h-1 bg-[#5D4037]/20 rounded-full mt-8" />
+    </div>
+);
+
+// --- API HELPER: PHILOSOPHY ---
+const fetchCatPhilosophy = async () => {
+    try {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "model": "meta-llama/llama-3.3-70b-instruct",
+                "messages": [
+                    { "role": "system", "content": "You are a wise, philosophical cat. Write a very short, profound, and unique quote about the nature of existence, naps, sunbeams, or the red dot. Max 25 words. Be poetic. yet the most simplest words and deepest meaning, simple for kid deep for adult." },
+                    { "role": "user", "content": "Write me a letter." }
+                ],
+                "temperature": 0.9
+            })
+        });
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || "The void stares back... and purrs.";
+    } catch (e) {
+        console.error("Philosophy Error", e);
+        return "To nap is to know the universe.";
+    }
+};
+
 // --- STICKY WALL TASK LIST ---
 const StickyWallList = () => {
     const [tasks, setTasks] = useState(() => {
@@ -83,27 +132,42 @@ const DonutCushion = () => (
     </div>
 );
 
-const InteractiveBookshelf = () => {
+const InteractiveBookshelf = ({ onRead }) => {
     const [touched, setTouched] = useState(false);
 
     return (
         <div
-            onClick={() => { setTouched(true); setTimeout(() => setTouched(false), 500); }}
-            className={`w-28 h-40 bg-[#5D4037] rounded-lg border-4 border-[#3E2723] shadow-xl flex flex-col justify-between p-2 group pointer-events-auto cursor-pointer relative overflow-visible transition-transform duration-200 ${touched ? 'scale-95' : 'hover:scale-105'}`}
+            onClick={(e) => {
+                e.stopPropagation();
+                setTouched(true);
+                onRead && onRead();
+                setTimeout(() => setTouched(false), 500);
+            }}
+            className={`w-32 h-64 bg-[#5D4037] rounded-lg border-r-8 border-b-8 border-[#3E2723] shadow-2xl flex flex-col justify-between p-3 group pointer-events-auto cursor-pointer relative overflow-visible transition-transform duration-200 ${touched ? 'scale-95' : 'hover:scale-[1.02]'}`}
         >
             {/* Wood Texture */}
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-black to-transparent pointer-events-none" />
 
-            {/* Shelves */}
+            {/* Shelves (4 shelves evenly spaced) */}
+            {/* We let flex-col justify-between handle the spacing, so books need to be positioned relative to the container height percentages */}
             {[0, 1, 2, 3].map(i => (
                 <div key={i} className="relative h-2 w-full bg-[#3E2723] rounded-full shadow-sm z-10" />
             ))}
 
-            {/* Books */}
-            <div className="absolute bottom-[27%] left-2 w-4 h-12 bg-red-800 rounded-sm transform -rotate-6 shadow-sm border-l border-white/10" />
-            <div className={`absolute bottom-[27%] left-7 w-5 h-14 bg-blue-900 rounded-sm shadow-sm border-l border-white/10 transition-transform duration-300 ${touched ? '-translate-y-4' : ''}`} />
-            <div className="absolute bottom-[27%] left-13 w-4 h-10 bg-green-800 rounded-sm transform rotate-3 shadow-sm border-l border-white/10" />
-            <div className="absolute top-[27%] right-4 w-12 h-3 bg-yellow-700 rounded-sm shadow-sm" /> {/* Lying down book */}
+            {/* Books - Shelf 1 (Bottom, index 3 approx) */}
+            <div className="absolute bottom-[28%] left-2 w-4 h-12 bg-red-800 rounded-sm transform -rotate-3 shadow-sm border-l border-white/10" />
+            <div className={`absolute bottom-[28%] left-7 w-5 h-14 bg-blue-900 rounded-sm shadow-sm border-l border-white/10 transition-transform duration-300 ${touched ? '-translate-y-4' : ''}`} />
+            <div className="absolute bottom-[28%] left-[3.25rem] w-4 h-10 bg-green-800 rounded-sm transform rotate-2 shadow-sm border-l border-white/10" />
+
+            {/* Books - Shelf 2 (Middle) */}
+            <div className="absolute bottom-[55%] right-4 w-12 h-3 bg-yellow-700 rounded-sm shadow-sm" /> {/* Lying down book */}
+            <div className="absolute bottom-[55%] left-4 w-3 h-10 bg-purple-800 rounded-sm shadow-sm" />
+
+            {/* Pot on top shelf (Shelf 0 sort of) */}
+            <div className="absolute top-[8%] right-[30%] w-6 h-8 bg-orange-300 rounded-sm shadow-sm flex items-end justify-center">
+                <div className="w-4 h-4 bg-green-500 rounded-full -mb-2" />
+            </div>
+
             {/* Pop-up Book */}
             {touched && <div className="absolute top-[-20px] left-1/2 -translate-x-1/2 text-xs bg-white px-2 py-1 rounded shadow-md animate-fade-out-up whitespace-nowrap z-50">📖 Reading...</div>}
         </div>
@@ -386,7 +450,115 @@ const StudyTimerOverlay = ({ timeRemaining, onCancel }) => {
     );
 };
 
-const WholesomeCatRoom = () => {
+const PhilosophicalLetter = ({ onClose }) => {
+    const [content, setContent] = useState("");
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        // 2s Delay "Writing"
+        const timer = setTimeout(async () => {
+            const quote = await fetchCatPhilosophy();
+            setContent(quote);
+            setLoading(false);
+        }, 2000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+            <div
+                className="relative w-[300px] md:w-[400px] min-h-[300px] bg-[#F5F5DC] shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-sm p-8 transform rotate-1 cursor-default transition-all duration-700 ease-out"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                    backgroundImage: 'linear-gradient(#E8E8C8 1px, transparent 1px)',
+                    backgroundSize: '100% 1.5rem',
+                    boxShadow: '10px 10px 30px rgba(0,0,0,0.3)',
+                }}
+            >
+                {/* Paper Texture Effect */}
+                <div className="absolute inset-0 bg-orange-100 opacity-20 pointer-events-none mix-blend-multiply" />
+
+                {/* Stamp */}
+                <div className="absolute top-4 right-4 text-red-800 opacity-80 border-2 border-red-800 rounded-full w-12 h-12 flex items-center justify-center transform -rotate-12">
+                    <span className="text-xs font-bold uppercase">PAW</span>
+                </div>
+
+                <div className="mt-8 font-serif text-[#3E2723] text-lg leading-loose">
+                    {loading ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center opacity-50 space-y-2 mt-12">
+                            {/* Cat Writing Animation */}
+                            <div className="text-4xl animate-bounce">✍️</div>
+                            <span className="animate-pulse text-sm italic">The cat is writing...</span>
+                        </div>
+                    ) : (
+                        <div className="animate-fade-in-slow">
+                            <p className="mb-4">Dearest User,</p>
+                            <p className="italic">"{content}"</p>
+                            <p className="mt-8 text-right">- A Cat</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
+
+// --- CREATIVE THOUGHT ENGINE ---
+const generateMochiThought = (bond, sanity, weather, isWitchingHour) => {
+    // 1. Contextual Thoughts
+    const contextThoughts = [];
+
+    // Time/Weather
+    if (isWitchingHour) contextThoughts.push("The shadows are whispering...", "Do you see them too?", "I don't like this hour...", "010101...");
+    if (weather === 'rain') contextThoughts.push("pitter patter...", "The screen is leaking.", "I want to catch a raindrop.");
+    if (weather === 'night') contextThoughts.push("The pixels are sleeping.", "Are you nocturnal too?", "The moon is just a circle.");
+
+    // Sanity
+    if (sanity < 50) contextThoughts.push("Is the user real?", "My tail... it's buffering.", "I feel... compressed.", "Delete me.");
+    if (sanity > 90) contextThoughts.push("I love this room.", "You take good care of me.", "So cozy...", "Purrfect.");
+
+    // Bond
+    if (bond < 10) contextThoughts.push("Who are you?", "Do not touch.", "I am observing you.");
+    if (bond > 50) contextThoughts.push("I missed you.", "Can we play?", "You are my favorite user.");
+
+    // 2. Random/Existential/Meta Thoughts (The "Creative" Stuff)
+    const randomThoughts = [
+        // Philosophy
+        "If I fit, therefore I sit.",
+        "Am I a cat, or just code?",
+        "Do you dream of electric mice?",
+        "I saw a cursor fly by.",
+        "Is there a world outside the bezel?",
+        // Fourth Wall
+        "Nice cursor.",
+        "Stop clicking so hard.",
+        "I see your reflection in the screen.",
+        "Have you drunk water today?",
+        // Cat Logic
+        "I saw a bug. It was a pixel.",
+        "Zoomies loading... 99%...",
+        "My tail has a mind of its own.",
+        "Thinking about tuna.",
+        "Staring contest. Go.",
+        // Random
+        "Meow.",
+        "Mrrrp?",
+        " *slow blink* ",
+        "Loading purr.exe..."
+    ];
+
+    // Mix them up
+    const pool = [...randomThoughts, ...contextThoughts];
+    return pool[Math.floor(Math.random() * pool.length)];
+};
+
+const CatRoomContent = () => {
+    // --- CONFIG ---
+    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+    const MODEL_NAME = "mistralai/devstral-2512:free";
+
     // --- STATE: WORLD ---
     const [input, setInput] = useState('');
     const [mochiThought, setMochiThought] = useState('');
@@ -429,8 +601,6 @@ const WholesomeCatRoom = () => {
     };
 
     const [inventory, setInventory] = useState(() => load('inventory', []));
-    const [decorations, setDecorations] = useState(() => load('decorations', []));
-    const [skin, setSkin] = useState(() => load('skin', 'default'));
     const [bondLevel, setBondLevel] = useState(() => load('bond', 1)); // 0-100
     const [sanity, setSanity] = useState(100); // 0-100 (Global Sanity)
     const [loreUnlocked, setLoreUnlocked] = useState([]);
@@ -443,9 +613,7 @@ const WholesomeCatRoom = () => {
 
     // --- PERSISTENCE EFFECTS ---
     useEffect(() => localStorage.setItem('mochi_bond', JSON.stringify(bondLevel)), [bondLevel]);
-    useEffect(() => localStorage.setItem('mochi_skin', JSON.stringify(skin)), [skin]);
     useEffect(() => localStorage.setItem('mochi_inventory', JSON.stringify(inventory)), [inventory]);
-    useEffect(() => localStorage.setItem('mochi_decorations', JSON.stringify(decorations)), [decorations]);
 
     // --- STATE: MODES ---
     const [focusMode, setFocusMode] = useState(false);
@@ -463,7 +631,6 @@ const WholesomeCatRoom = () => {
     const [isResizing, setIsResizing] = useState(false); // Drag state
     const [musicVibe, setMusicVibe] = useState(null); // 'sad', 'hype', 'lofi'
     const [showMusicMenu, setShowMusicMenu] = useState(false); // Music Menu Toggle
-    const [showSkinMenu, setShowSkinMenu] = useState(false); // Skin Menu Toggle (Legacy, keeping for skins)
     const [showPantry, setShowPantry] = useState(false); // NEW: Pantry Drawer
     const [flyingFood, setFlyingFood] = useState(null); // { item, startPos }
     const [rareFlash, setRareFlash] = useState(false); // For the 10% glitch
@@ -471,12 +638,18 @@ const WholesomeCatRoom = () => {
     // --- PHASE 4: COZY UTILITIES ---
     const [showCalendar, setShowCalendar] = useState(false);
     const [showBrowser, setShowBrowser] = useState(false);
+    const [showLetter, setShowLetter] = useState(false); // NEW LETTER STATE
     const [showBubbleWrap, setShowBubbleWrap] = useState(false);
     const [lampOn, setLampOn] = useState(true);
 
-    // OpenRouter Config
-    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
-    const MODEL_NAME = "mistralai/devstral-2512:free";
+    const closeAllMenus = () => {
+        setShowCalendar(false);
+        setShowBrowser(false);
+        setShowBubbleWrap(false);
+        setShowMusicMenu(false);
+        setShowPantry(false);
+        setShowLetter(false);
+    };
 
     // Refs
     const lastSleepTime = useRef(Date.now());
@@ -717,14 +890,7 @@ const WholesomeCatRoom = () => {
         };
     }, [focusMode, roomMessy, sanity]);
 
-    // --- HELPER: ONE MENU AT A TIME ---
-    const closeAllMenus = () => {
-        setShowMusicMenu(false);
-        setShowPantry(false);
-        setShowSkinMenu(false);
-        setShowCinemaInput(false);
-        // setShowStudyConfig(false); // Optional: keep focus config separate? User said "every menu".
-    };
+
 
     // --- 3. FOCUS MODE (Pomodoro) ---
     const toggleFocusMode = () => {
@@ -834,11 +1000,13 @@ const WholesomeCatRoom = () => {
             setRoomMessy(false);
             setSanity(prev => Math.min(100, prev + 2));
         } else {
-            // FAIL
-            const ignores = ['idle', 'clean', 'sleep', 'turn_away'];
+            // FAIL (or just Idle interaction)
+            const ignores = ['idle', 'clean', 'sleep', 'turn_away', 'stare'];
             setMochiState(ignores[Math.floor(Math.random() * ignores.length)]);
-            const thoughts = ["Purr...", "Warm...", "Zzz...", "Slow blink.", "Soft..."];
-            setMochiThought(thoughts[Math.floor(Math.random() * thoughts.length)]);
+
+            // Generate a Creative Thought
+            const newThought = generateMochiThought(bondLevel, sanity, weather, isWitchingHour);
+            setMochiThought(newThought);
         }
 
         checkLoreUnlocks();
@@ -945,6 +1113,11 @@ const WholesomeCatRoom = () => {
                         const dest = 10 + Math.random() * 80;
                         await triggerMovement(dest, 8, 'walking');
                         setMochiState('idle');
+
+                        // Occasional thought while walking (30% chance)
+                        if (Math.random() < 0.3) {
+                            setMochiThought(generateMochiThought(bondLevel, sanity, weather, isWitchingHour));
+                        }
                     }
 
                     // Recursive Loop
@@ -1093,22 +1266,7 @@ const WholesomeCatRoom = () => {
         }
     };
 
-    const placeDecoration = (item) => {
-        // Random position on the wall
-        const x = Math.random() * 80 + 10; // 10-90%
-        const y = Math.random() * 60 + 10; // 10-70%
-        setDecorations(prev => [...prev, { item, x, y, id: Date.now() }]);
-        // Consume item? Yes, remove from inventory to prevent infinite duplication
-        setInventory(prev => {
-            const idx = prev.indexOf(item);
-            if (idx > -1) {
-                const newInv = [...prev];
-                newInv.splice(idx, 1);
-                return newInv;
-            }
-            return prev;
-        });
-    };
+
 
     const feedMochi = (item) => {
         // Validation: Can we eat this?
@@ -1242,16 +1400,17 @@ const WholesomeCatRoom = () => {
 
             let result;
             try {
-                // regex to find json block if mixed
-                const jsonMatch = accumulatedText.match(/\{[\s\S]*\}/); // crude
-                // Combine buffer logic 
-                // Creating a cleaner accumulation for the final parse
-                // The loop above populates 'buffer' with the raw content deltas.
-
                 // Sanitize buffer in case of markdown wrapping
-                const cleanBuffer = buffer.replace(/```json/g, '').replace(/```/g, '');
+                // We ONLY use buffer because accumulatedText contains the raw SSE stream (data: {...}) 
+                // which leads to false positives when regex matching for JSON.
+                const cleanBuffer = buffer.replace(/```json/g, '').replace(/```/g, '').trim();
+
+                // Attempt to extract JSON if there's surrounding text (though system prompt forbids it)
+                const jsonMatch = cleanBuffer.match(/\{[\s\S]*\}/);
+
                 result = JSON.parse(jsonMatch ? jsonMatch[0] : cleanBuffer);
             } catch (e) {
+                console.error("JSON Parse Error", e);
                 // Fallback if stream breaks JSON
                 result = { action: 'confused', thought: buffer || "..." };
             }
@@ -1283,23 +1442,8 @@ const WholesomeCatRoom = () => {
         }, 30); // 30ms per char
     };
 
-    // --- RENDER HELPERS ---
-    const unlockSkin = (newSkin) => {
-        if (bondLevel > 20 || newSkin === 'default') setSkin(newSkin);
-        else setMochiThought(`Need Bond Level 20. Current: ${bondLevel}`);
-    };
-
-    const getContainerClass = () => {
-        let base = "relative w-full h-screen overflow-hidden transition-all duration-1000 ease-in-out font-sans ";
-        if (skin === 'crt') return base + "bg-black font-mono ";
-        if (skin === 'vapor') return base + "bg-slate-900 font-sans ";
-        if (skin === 'eldritch') return base + "bg-red-950 font-serif ";
-
-        const isNight = weather === 'night' || isWitchingHour || new Date().getHours() > 18 || new Date().getHours() < 6;
-        return base + (isNight ? 'bg-[#2a2a40] text-indigo-100' : 'bg-[#FFF8E7] text-[#5D4037]'); // Warm Cream Day / Deep Blue Starry Night
-    };
-
     // Dynamic Filter Style
+
     // Dynamic Filter Style
     const containerStyle = {
         // Redesigned Horror Balance:
@@ -1427,7 +1571,27 @@ const WholesomeCatRoom = () => {
                     <div className={`absolute bottom-[-5%] left-1/2 -translate-x-1/2 w-[120%] h-[40%] floor-stage shadow-2xl transition-colors duration-2000 ${isNight ? 'bg-[#3E3E4E]' : 'bg-[#E6D0B3]'} border-t-[16px] border-[#D4C3A3]`} />
 
                     <div className="absolute bottom-[25%] left-[75%] pointer-events-auto transform scale-150 origin-bottom z-20"><Plant /></div>
-                    <div className="absolute bottom-[15%] left-[65%] pointer-events-auto transform scale-150 origin-bottom z-20"><CoffeeMug /></div>
+                    <div className={`absolute bottom-[10%] left-[15%] pointer-events-auto transform scale-150 origin-bottom z-20 transition-opacity duration-300 ${mochiState === 'drinking' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                        <CoffeeMug onClick={async (e) => {
+                            playSound('click_high_sanity');
+                            spawnParticles(e.clientX, e.clientY, 'sparkle');
+
+                            // 1. Walk to the Mug (approx 15%)
+                            await triggerMovement(15, 25, 'walking');
+
+                            // 2. Drink
+                            setMochiState('drinking');
+                            setMochiThought("Sip... sip...");
+
+                            // 3. Finish after 4s
+                            setTimeout(() => {
+                                setMochiState('idle');
+                                setSanity(prev => Math.min(100, prev + 5));
+                                setMochiThought("Warm.");
+                                playSound('purr');
+                            }, 4000);
+                        }} />
+                    </div>
 
                     {/* Rug */}
                     {/* Rug (Styled Area Rug) */}
@@ -1454,11 +1618,9 @@ const WholesomeCatRoom = () => {
                     </div>
 
                     {/* NEW: Cozy Furniture (Resized for Scale) */}
-                    <div className="absolute bottom-[20%] left-[25%] pointer-events-auto z-20 transform scale-150 origin-bottom">
-                        <DonutCushion />
-                    </div>
+
                     <div className="absolute bottom-[22%] left-[20%] pointer-events-auto z-20 origin-bottom transform scale-[1.9]">
-                        <InteractiveBookshelf />
+                        <InteractiveBookshelf onRead={() => { closeAllMenus(); setShowLetter(true); }} />
                     </div>
 
                     {/* Floor Lamp */}
@@ -1509,11 +1671,12 @@ const WholesomeCatRoom = () => {
                         }}
                         style={{
                             left: `${mochiX}%`,
-                            transform: `translateX(-50%) scaleX(${direction})`,
-                            transition: isWalking ? `left ${moveDuration} linear` : 'left 0.5s ease-out',
-                            zIndex: LAYERS.ENTITIES
+                            transform: `translateX(-50%) scaleX(${direction}) scale(${mochiState === 'drinking' ? 1.2 : 1})`, // Z-axis simulation (Scale)
+                            transition: isWalking ? `left ${moveDuration} linear` : 'left 0.5s ease-out, bottom 0.5s ease-out, transform 0.5s ease-out',
+                            zIndex: mochiState === 'drinking' ? LAYERS.UI_WORLD + 10 : LAYERS.ENTITIES, // Z-axis simulation (Layer)
+                            bottom: mochiState === 'drinking' ? '12%' : '25%' // Y-axis transform (Move down)
                         }}
-                        className={`absolute bottom-[25%] cursor-pointer group origin-bottom pointer-events-auto`}
+                        className={`absolute cursor-pointer group origin-bottom pointer-events-auto`}
                     >
                         <div className={isBooped ? 'animate-boop' : (isWalking ? 'animate-waddle' : 'animate-breathe')}>
                             {/* <MochiAvatar state={mochiState} isWitchingHour={isWitchingHour} skin={skin} musicVibe={musicVibe} mousePos={eyeTrackingEnabled ? mousePos : null} /> */}
@@ -1575,6 +1738,8 @@ const WholesomeCatRoom = () => {
             {/* UI: Unified Status Card (Replaces LoveBar, Clock, Calendar) */}
             <StatusCard loveLevel={bondLevel} catName={catName} onRename={updateCatName} />
 
+            {showLetter && <PhilosophicalLetter onClose={() => setShowLetter(false)} />}
+
 
 
             {/* DEV RESET BUTTON (User Requested) */}
@@ -1598,11 +1763,10 @@ const WholesomeCatRoom = () => {
                 isOpen={showPantry}
                 onClose={() => setShowPantry(false)}
                 onFeed={handlePantryFeed}
-                onDecorate={placeDecoration}
             />
 
             {/* Controls (Bottom Dock - Scattered Toys Style with Contrast) */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-6 animate-slide-up pointer-events-auto" style={{ zIndex: LAYERS.HUD }}>
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-6 animate-slide-up pointer-events-auto" style={{ zIndex: 90 }}>
 
                 {/* Focus Mode */}
                 <button onClick={(e) => { e.stopPropagation(); closeAllMenus(); toggleFocusMode(); }} title="Focus Mode" className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode ? 'bg-red-500 text-white border-red-700 shadow-[0_4px_0_#990000]' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}>
@@ -1642,22 +1806,7 @@ const WholesomeCatRoom = () => {
                     <Utensils size={24} strokeWidth={2.5} />
                 </button>
 
-                {/* Skin Menu (Monitor) */}
-                <div className="relative group">
-                    <button onClick={(e) => { e.stopPropagation(); const wasOpen = showSkinMenu; closeAllMenus(); if (!wasOpen) setShowSkinMenu(true); }} title="Skins & Decorations" className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] bg-[#FAF5E6] text-[#5D4037] hover:bg-white">
-                        <Monitor size={24} strokeWidth={2.5} />
-                    </button>
-                    {showSkinMenu && (
-                        <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-xl p-4 rounded-2xl shadow-xl w-72 animate-fade-in z-50 border border-[#5D4037]/10" onClick={(e) => e.stopPropagation()}>
-                            <h3 className="text-[10px] font-bold text-stone-400 mb-2 uppercase tracking-widest">Skins</h3>
-                            <div className="grid grid-cols-3 gap-2">
-                                <button onClick={() => setSkin('default')} className="p-2 border rounded hover:bg-stone-100 text-xs">Standard</button>
-                                <button onClick={() => setSkin('void')} className="p-2 border rounded hover:bg-black hover:text-white text-xs">Void</button>
-                                <button onClick={() => setSkin('crt')} className="p-2 border rounded hover:bg-green-900 hover:text-green-400 text-xs font-mono">CRT</button>
-                            </div>
-                        </div>
-                    )}
-                </div>
+
 
                 {/* Cinema Mode */}
                 <div className="relative">
@@ -1720,14 +1869,7 @@ const WholesomeCatRoom = () => {
                 </div>
             </div>
 
-            {/* Wall Decor (Placed Items) */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
-                {decorations.map((d) => (
-                    <div key={d.id} className="absolute transform -translate-x-1/2 -translate-y-1/2 filter drop-shadow-md opacity-80" style={{ left: `${d.x}%`, top: `${d.y}%`, transform: `translate(${px(0.02)}px, ${py(0.02)}px)` }}>
-                        {d.item.includes("Mouse") ? "🐭" : "📦"}
-                    </div>
-                ))}
-            </div>
+
 
             {showBrowser && <MiniBrowser onClose={() => setShowBrowser(false)} />}
             {showBubbleWrap && <BubbleWrap onClose={() => setShowBubbleWrap(false)} />}
@@ -2210,14 +2352,33 @@ const Plant = () => (
     </div>
 );
 
-const CoffeeMug = () => (
-    <div className="absolute bottom-[10%] left-[65%] w-8 h-8 z-30 group cursor-pointer hover:-translate-y-1 transition-transform">
-        <svg viewBox="0 0 40 40" className="w-full h-full drop-shadow-md">
-            <path d="M10 10 L 10 30 Q 10 35 15 35 L 25 35 Q 30 35 30 30 L 30 10 Z" fill="#fff" />
-            <path d="M30 15 Q 35 15 35 20 Q 35 25 30 25" stroke="#fff" strokeWidth="3" fill="none" />
+const CoffeeMug = ({ onClick }) => (
+    <div
+        onClick={onClick}
+        className="w-16 h-12 relative z-30 group cursor-pointer hover:-translate-y-2 transition-transform origin-bottom"
+    >
+        {/* Soft Shadow Base */}
+        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-10 h-3 bg-[#3E2723] opacity-20 blur-sm rounded-full" />
+
+        <svg viewBox="0 0 60 50" className="w-full h-full drop-shadow-sm filter contrast-110">
+            {/* Saucer */}
+            <ellipse cx="30" cy="42" rx="22" ry="6" fill="#D7CCC8" stroke="#A1887F" strokeWidth="1" />
+
+            {/* Handle (Loop behind) */}
+            <path d="M42 20 Q 52 20 52 28 Q 52 36 42 36" stroke="#8D6E63" strokeWidth="4" fill="none" strokeLinecap="round" />
+
+            {/* Cup Body */}
+            <path d="M18 10 L 20 38 Q 30 44 42 38 L 44 10 Z" fill="#EFEBE9" stroke="#8D6E63" strokeWidth="1" />
+
+            {/* Coffee Liquid Surface */}
+            <ellipse cx="31" cy="12" rx="12" ry="4" fill="#3E2723" opacity="0.9" />
+
             {/* Steam */}
-            <path d="M15 5 Q 15 0 20 5" stroke="#fff" strokeWidth="2" strokeLinecap="round" className="animate-pulse opacity-50" />
-            <path d="M25 5 Q 25 0 30 5" stroke="#fff" strokeWidth="2" strokeLinecap="round" className="animate-pulse opacity-50" style={{ animationDelay: '0.5s' }} />
+            <g className="opacity-60 transition-opacity duration-1000">
+                <path d="M25 8 Q 20 0 25 -8" stroke="#ECEFF1" strokeWidth="2" strokeLinecap="round" className="animate-pulse" style={{ animationDuration: '2s' }} />
+                <path d="M30 8 Q 35 2 30 -6" stroke="#ECEFF1" strokeWidth="2" strokeLinecap="round" className="animate-pulse" style={{ animationDelay: '0.4s', animationDuration: '2.5s' }} />
+                <path d="M35 8 Q 30 0 35 -8" stroke="#ECEFF1" strokeWidth="2" strokeLinecap="round" className="animate-pulse" style={{ animationDelay: '0.8s', animationDuration: '3s' }} />
+            </g>
         </svg>
     </div>
 );
@@ -2242,4 +2403,26 @@ const WallClock = () => {
 
 
 
+
+// --- WRAPPER COMPONENT (Mobile Guard) ---
+const WholesomeCatRoom = () => {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    if (isMobile) {
+        return <MobileBlocker />;
+    }
+
+    return <CatRoomContent />;
+};
+
 export default WholesomeCatRoom;
+
