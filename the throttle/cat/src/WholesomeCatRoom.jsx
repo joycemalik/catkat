@@ -54,8 +54,8 @@ const fetchCatPhilosophy = async () => {
             body: JSON.stringify({
                 "model": "meta-llama/llama-3.3-70b-instruct",
                 "messages": [
-                    { "role": "system", "content": "You are a wise, philosophical cat. Write a very short, profound, and unique quote about the nature of existence, naps, sunbeams, or the red dot. Max 25 words. Be poetic. yet the most simplest words and deepest meaning, simple for kid deep for adult." },
-                    { "role": "user", "content": "Write me a letter." }
+                    { "role": "system", "content": "You are a wise, philosophical cat. Write a very short, profound, and unique quote about the humans but as seen in the cat perspective. Max 15 words. Be poetic. yet the most simplest words and deepest meaning, simple for kid deep for adult." },
+                    { "role": "user", "content": "Enlighten me." }
                 ],
                 "temperature": 0.9
             })
@@ -155,21 +155,18 @@ const InteractiveBookshelf = ({ onRead }) => {
             ))}
 
             {/* Books - Shelf 1 (Bottom, index 3 approx) */}
-            <div className="absolute bottom-[28%] left-2 w-4 h-12 bg-red-800 rounded-sm transform -rotate-3 shadow-sm border-l border-white/10" />
-            <div className={`absolute bottom-[28%] left-7 w-5 h-14 bg-blue-900 rounded-sm shadow-sm border-l border-white/10 transition-transform duration-300 ${touched ? '-translate-y-4' : ''}`} />
-            <div className="absolute bottom-[28%] left-[3.25rem] w-4 h-10 bg-green-800 rounded-sm transform rotate-2 shadow-sm border-l border-white/10" />
+            <div className="absolute bottom-[36%] left-2 w-4 h-12 bg-red-800 rounded-sm transform -rotate-3 shadow-sm border-l border-white/10" />
+            <div className={`absolute bottom-[36%] left-7 w-5 h-14 bg-blue-900 rounded-sm shadow-sm border-l border-white/10 transition-transform duration-300 ${touched ? '-translate-y-4' : ''}`} />
+            <div className="absolute bottom-[38%] left-[3.25rem] w-4 h-10 bg-green-800 rounded-sm transform rotate-2 shadow-sm border-l border-white/10" />
 
             {/* Books - Shelf 2 (Middle) */}
-            <div className="absolute bottom-[55%] right-4 w-12 h-3 bg-yellow-700 rounded-sm shadow-sm" /> {/* Lying down book */}
-            <div className="absolute bottom-[55%] left-4 w-3 h-10 bg-purple-800 rounded-sm shadow-sm" />
+            <div className="absolute bottom-[66%] right-4 w-12 h-3 bg-yellow-700 rounded-sm shadow-sm" /> {/* Lying down book */}
+            <div className="absolute bottom-[66%] left-4 w-3 h-10 bg-purple-800 rounded-sm shadow-sm" />
 
             {/* Pot on top shelf (Shelf 0 sort of) */}
-            <div className="absolute top-[8%] right-[30%] w-6 h-8 bg-orange-300 rounded-sm shadow-sm flex items-end justify-center">
-                <div className="w-4 h-4 bg-green-500 rounded-full -mb-2" />
-            </div>
 
             {/* Pop-up Book */}
-            {touched && <div className="absolute top-[-20px] left-1/2 -translate-x-1/2 text-xs bg-white px-2 py-1 rounded shadow-md animate-fade-out-up whitespace-nowrap z-50">📖 Reading...</div>}
+            {touched && <div className="absolute top-[-24px] left-1/2 -translate-x-1/2 text-xs bg-white px-2 py-1 rounded shadow-md animate-fade-out-up whitespace-nowrap z-50">📖 Reading...</div>}
         </div>
     );
 };
@@ -492,9 +489,9 @@ const PhilosophicalLetter = ({ onClose }) => {
                         </div>
                     ) : (
                         <div className="animate-fade-in-slow">
-                            <p className="mb-4">Dearest User,</p>
+                            <p className="mb-4">Dear reader,</p>
                             <p className="italic">"{content}"</p>
-                            <p className="mt-8 text-right">- A Cat</p>
+                            <p className="mt-8 text-right">- The Cat </p>
                         </div>
                     )}
                 </div>
@@ -1335,7 +1332,7 @@ const CatRoomContent = () => {
 
         // Mochi Persona System Instruction
         const systemInstruction = `
-      You are Mochi. You are a biological cat trapped in a screen. 
+      You are Mochi. You are a biological cat . 
       Current Bond Level: ${bondLevel}/100.
       Current Sanity: ${sanity}%.
       User's Music Vibe: ${musicVibe || "None"}.
