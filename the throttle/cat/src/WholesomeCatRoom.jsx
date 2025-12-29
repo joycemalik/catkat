@@ -475,7 +475,7 @@ const WholesomeCatRoom = () => {
     const [lampOn, setLampOn] = useState(true);
 
     // OpenRouter Config
-    const apiKey = "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";
+    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
     const MODEL_NAME = "mistralai/devstral-2512:free";
 
     // Refs
@@ -860,13 +860,13 @@ const WholesomeCatRoom = () => {
 
         const distance = Math.abs(targetPos - currentPos);
         const duration = (distance / speedFactor) * 1000;
-        
+
         setMoveDuration((duration / 1000).toFixed(2) + 's');
-        
+
         // Wait for render to apply duration, then move? 
         // React batches, so calling setMochiX same tick *might* use old transition if not careful.
         // But usually fine. safer to trigger move in next tick or ensure transition property updates with isWalking.
-        
+
         setMochiX(targetPos);
 
         return new Promise(resolve => {
@@ -887,7 +887,7 @@ const WholesomeCatRoom = () => {
             const dest = 10 + Math.random() * 80;
             triggerMovement(dest, mochiState === 'run' ? 40 : 15, 'walking').then(() => setMochiState('idle'));
         } else if (mochiState === 'dance') {
-             // Jiggle in place?
+            // Jiggle in place?
         }
     }, [mochiState]);
 
