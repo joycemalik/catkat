@@ -99,7 +99,7 @@ const StickyWallList = ({ isMobile }) => {
     };
 
     return (
-        <div className={`absolute z-20 bg-[#FFF9C4] p-4 shadow-md rotate-2 transform origin-top-center rounded-sm transition-transform hover:scale-105 hover:rotate-0 font-serif text-[#5D4037] pointer-events-auto ${isMobile ? 'top-[20%] right-[0%] w-24 scale-[0.85] origin-top-right' : 'top-[15%] right-[20%] w-48 scale-100'}`}>
+        <div className={`absolute z-20 bg-[#FFF9C4] p-4 shadow-md rotate-2 transform origin-top-center rounded-sm transition-transform hover:scale-105 hover:rotate-0 font-serif text-[#5D4037] pointer-events-auto ${isMobile ? 'top-[15%] right-[2%] w-24 scale-[0.65] origin-top-right' : 'top-[15%] right-[20%] w-48 scale-100'}`}>
             <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-16 h-6 bg-white/50 backdrop-blur-sm shadow-sm rotate-1"></div>
             <h3 className="text-sm font-bold border-b border-[#5D4037]/20 pb-1 mb-2">To-Do</h3>
             <div className="flex flex-col gap-1 max-h-[150px] overflow-y-auto mb-2 custom-scrollbar">
@@ -286,7 +286,7 @@ const LoveBar = ({ level, max = 100 }) => {
     const percentage = Math.min(100, Math.max(0, (visualLevel / max) * 100));
 
     return (
-        <div className={`absolute top-6 left-6 z-[80] transition-transform duration-300 ${pulsing ? 'scale-110' : 'scale-100'}`} style={{ transform: isMobile ? 'scale(0.7) translate(-20%, -20%)' : undefined }}>
+        <div className={`absolute top-6 left-6 z-[80] transition-transform duration-300 ${pulsing ? 'scale-110' : 'scale-100'}`} style={{ transform: isMobile ? 'scale(0.55) translate(-30%, -30%)' : undefined }}>
             <div className="relative w-48 h-8 bg-[#E6D0B3] rounded-full shadow-xl border-2 border-white/50 overflow-hidden group">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 to-transparent" />
@@ -1734,7 +1734,7 @@ const CatRoomContent = ({ isMobile }) => {
                         }}
                         style={{
                             left: `${mochiX}%`,
-                            transform: `translateX(-50%) scaleX(${direction}) scale(${mochiState === 'drinking' ? 1.2 : (isMobile ? 0.9 : 1)})`, // Reduced Mobile Scale (1.5 -> 0.9)
+                            transform: `translateX(-50%) scaleX(${direction}) scale(${mochiState === 'drinking' ? 1.2 : (isMobile ? 0.75 : 1)})`, // Reduced Mobile Scale (0.9 -> 0.75) for vertical screens
                             transition: isWalking ? `left ${moveDuration} linear` : 'left 0.5s ease-out, bottom 0.5s ease-out, transform 0.5s ease-out',
                             zIndex: (isChatting && isMobile) ? 80 : (mochiState === 'drinking' ? LAYERS.UI_WORLD + 10 : LAYERS.ENTITIES), // Spotlight Elevation
                             bottom: mochiState === 'drinking' ? '12%' : '25%' // Y-axis transform (Move down)
@@ -1826,7 +1826,7 @@ const CatRoomContent = ({ isMobile }) => {
             />
 
             {/* Controls (Bottom Dock - Anchored Input Version) */}
-            <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 w-[95%] max-w-3xl animate-slide-up pointer-events-auto transition-opacity duration-300 ${isChatting && isMobile ? 'opacity-100 z-[90]' : 'opacity-100 z-50'}`}>
+            <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 md:gap-4 w-[95%] max-w-3xl animate-slide-up pointer-events-auto transition-opacity duration-300 ${isChatting && isMobile ? 'opacity-100 z-[90]' : 'opacity-100 z-50'}`}>
 
                 {/* 1. Anchored Input (Top of Dock) */}
                 <div className={`w-full max-w-sm group transition-all duration-500 hover:max-w-md`}>
@@ -1858,8 +1858,8 @@ const CatRoomContent = ({ isMobile }) => {
                 <div className={`flex flex-wrap justify-center gap-3 md:gap-4 transition-all duration-300 ${isChatting && isMobile ? 'opacity-0 pointer-events-none h-0 overflow-hidden' : 'opacity-100'}`}>
 
                     {/* Focus Mode */}
-                    <button onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); closeAllMenus(); toggleFocusMode(); }} title="Focus Mode" className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode ? 'bg-red-500 text-white border-red-700 shadow-[0_4px_0_#990000]' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}>
-                        <Glasses size={24} strokeWidth={2.5} />
+                    <button onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); closeAllMenus(); toggleFocusMode(); }} title="Focus Mode" className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode ? 'bg-red-500 text-white border-red-700 shadow-[0_4px_0_#990000]' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}>
+                        <Glasses size={isMobile ? 18 : 24} strokeWidth={2.5} />
                     </button>
 
                     {/* Music Menu */}
@@ -1877,9 +1877,9 @@ const CatRoomContent = ({ isMobile }) => {
                             }}
                             title="Music Atmosphere"
                             disabled={focusMode && strictMode}
-                            className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
+                            className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
                         >
-                            <Headphones size={24} strokeWidth={2.5} />
+                            <Headphones size={isMobile ? 18 : 24} strokeWidth={2.5} />
                         </button>
                         {showMusicMenu && !strictMode && (
                             <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm p-2 rounded-xl shadow-xl flex flex-col gap-2 w-32 animate-fade-in z-50 text-xs text-center border border-[#5D4037]/10" onClick={(e) => e.stopPropagation()}>
@@ -1892,8 +1892,8 @@ const CatRoomContent = ({ isMobile }) => {
                     </div>
 
                     {/* PANTRY TOGGLE (Fork & Knife) */}
-                    <button onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); const wasOpen = showPantry; closeAllMenus(); if (!wasOpen) setShowPantry(true); }} title="Open Pantry" className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${showPantry ? 'bg-[#5D4037] text-white border-[#3E2723] shadow-[0_4px_0_#2E1D18]' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}>
-                        <Utensils size={24} strokeWidth={2.5} />
+                    <button onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); const wasOpen = showPantry; closeAllMenus(); if (!wasOpen) setShowPantry(true); }} title="Open Pantry" className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${showPantry ? 'bg-[#5D4037] text-white border-[#3E2723] shadow-[0_4px_0_#2E1D18]' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}>
+                        <Utensils size={isMobile ? 18 : 24} strokeWidth={2.5} />
                     </button>
 
 
@@ -1904,9 +1904,9 @@ const CatRoomContent = ({ isMobile }) => {
                             onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); closeAllMenus(); setShowCinemaInput(!showCinemaInput); }}
                             title="TV Mode"
                             disabled={focusMode && strictMode}
-                            className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
+                            className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
                         >
-                            <PlayCircle size={24} strokeWidth={2.5} />
+                            <PlayCircle size={isMobile ? 18 : 24} strokeWidth={2.5} />
                         </button>
                         {showCinemaInput && !strictMode && (
                             <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-white p-2 rounded-xl shadow-xl flex gap-2 w-64 animate-pop-in z-[80] border border-[#5D4037]/10" onClick={(e) => e.stopPropagation()}>
@@ -1935,9 +1935,9 @@ const CatRoomContent = ({ isMobile }) => {
                         onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); closeAllMenus(); setShowBrowser(true); }}
                         title="Mochi Web"
                         disabled={focusMode && strictMode}
-                        className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
+                        className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
                     >
-                        <Globe size={24} strokeWidth={2.5} />
+                        <Globe size={isMobile ? 18 : 24} strokeWidth={2.5} />
                     </button>
 
                     {/* Bubble Wrap */}
@@ -1945,9 +1945,9 @@ const CatRoomContent = ({ isMobile }) => {
                         onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); closeAllMenus(); setShowBubbleWrap(true); }}
                         title="Stress Relief"
                         disabled={focusMode && strictMode}
-                        className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
+                        className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
                     >
-                        <Sparkles size={24} strokeWidth={2.5} />
+                        <Sparkles size={isMobile ? 18 : 24} strokeWidth={2.5} />
                     </button>
                 </div>
             </div>
@@ -2052,7 +2052,8 @@ const StatusCard = ({ loveLevel, catName, onRename, isMobile }) => {
     const hoursRatio = (minutesRatio + time.getHours()) / 12;
 
     return (
-        <div className={`absolute z-30 flex flex-col items-center pointer-events-auto filter drop-shadow-xl select-none  ${isMobile ? 'top-[5%] left-[2%] scale-[0.7] origin-top-left' : 'top-[8%] left-[8%] scale-100'}`}>
+        <div className={`absolute z-30 flex flex-col items-center pointer-events-auto filter drop-shadow-xl select-none  ${isMobile ? 'top-[5%] left-[2%] scale-[0.55] origin-top-left' : 'top-[8%] left-[8%] scale-100'}`}>
+
 
             {/* GROUP: The Entire "Cat Clock" Assembly (Compact Totem) */}
             <div className="relative flex flex-col items-center">
