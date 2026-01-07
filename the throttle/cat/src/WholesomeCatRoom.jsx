@@ -69,11 +69,13 @@ const fetchCatPhilosophy = async () => {
 };
 
 // --- STICKY WALL TASK LIST ---
-const StickyWallList = () => {
+const StickyWallList = ({ isMobile }) => {
     const [tasks, setTasks] = useState(() => {
         try {
             return JSON.parse(localStorage.getItem('mochi_tasks')) || [];
-        } catch { return []; }
+        } catch {
+            return [];
+        }
     });
     const [newTask, setNewTask] = useState('');
 
@@ -97,7 +99,7 @@ const StickyWallList = () => {
     };
 
     return (
-        <div className="absolute top-[15%] right-[20%] z-20 w-48 bg-[#FFF9C4] p-4 shadow-md rotate-2 transform origin-top-center rounded-sm transition-transform hover:scale-105 hover:rotate-0 font-serif text-[#5D4037] pointer-events-auto">
+        <div className={`absolute z-20 bg-[#FFF9C4] p-4 shadow-md rotate-2 transform origin-top-center rounded-sm transition-transform hover:scale-105 hover:rotate-0 font-serif text-[#5D4037] pointer-events-auto ${isMobile ? 'top-[20%] right-[0%] w-24 scale-[0.85] origin-top-right' : 'top-[15%] right-[20%] w-48 scale-100'}`}>
             <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-16 h-6 bg-white/50 backdrop-blur-sm shadow-sm rotate-1"></div>
             <h3 className="text-sm font-bold border-b border-[#5D4037]/20 pb-1 mb-2">To-Do</h3>
             <div className="flex flex-col gap-1 max-h-[150px] overflow-y-auto mb-2 custom-scrollbar">
@@ -143,30 +145,38 @@ const InteractiveBookshelf = ({ onRead }) => {
                 onRead && onRead();
                 setTimeout(() => setTouched(false), 500);
             }}
-            className={`w-32 h-64 bg-[#5D4037] rounded-lg border-r-8 border-b-8 border-[#3E2723] shadow-2xl flex flex-col justify-between p-3 group pointer-events-auto cursor-pointer relative overflow-visible transition-transform duration-200 ${touched ? 'scale-95' : 'hover:scale-[1.02]'}`}
+            className={`relative group pointer-events-auto cursor-pointer transition-transform duration-200 ${touched ? 'scale-95' : 'hover:scale-[1.02]'}`}
+            style={{ width: '8rem', height: '16rem', transformStyle: 'preserve-3d', transform: 'rotateY(-15deg)' }}
         >
-            {/* Wood Texture */}
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-black to-transparent pointer-events-none" />
+            {/* FRONT FACE */}
+            <div className="absolute inset-0 bg-[#5D4037] rounded-lg shadow-2xl flex flex-col justify-between p-3 overflow-visible border-r-4 border-b-4 border-[#3E2723]" style={{ transform: 'translateZ(20px)' }}>
 
-            {/* Shelves (4 shelves evenly spaced) */}
-            {/* We let flex-col justify-between handle the spacing, so books need to be positioned relative to the container height percentages */}
-            {[0, 1, 2, 3].map(i => (
-                <div key={i} className="relative h-2 w-full bg-[#3E2723] rounded-full shadow-sm z-10" />
-            ))}
+                {/* Wood Texture */}
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-black to-transparent pointer-events-none mix-blend-multiply" style={{ filter: 'url(#noise)' }} />
 
-            {/* Books - Shelf 1 (Bottom, index 3 approx) */}
-            <div className="absolute bottom-[36%] left-2 w-4 h-12 bg-red-800 rounded-sm transform -rotate-3 shadow-sm border-l border-white/10" />
-            <div className={`absolute bottom-[36%] left-7 w-5 h-14 bg-blue-900 rounded-sm shadow-sm border-l border-white/10 transition-transform duration-300 ${touched ? '-translate-y-4' : ''}`} />
-            <div className="absolute bottom-[38%] left-[3.25rem] w-4 h-10 bg-green-800 rounded-sm transform rotate-2 shadow-sm border-l border-white/10" />
+                {/* Shelves (4 shelves evenly spaced) */}
+                {[0, 1, 2, 3].map(i => (
+                    <div key={i} className="relative h-2 w-full bg-[#3E2723] rounded-full shadow-sm z-10" />
+                ))}
 
-            {/* Books - Shelf 2 (Middle) */}
-            <div className="absolute bottom-[66%] right-4 w-12 h-3 bg-yellow-700 rounded-sm shadow-sm" /> {/* Lying down book */}
-            <div className="absolute bottom-[66%] left-4 w-3 h-10 bg-purple-800 rounded-sm shadow-sm" />
+                {/* Books - Shelf 1 (Bottom, index 3 approx) */}
+                <div className="absolute bottom-[36%] left-2 w-4 h-12 bg-red-800 rounded-sm transform -rotate-3 shadow-sm border-l border-white/10" />
+                <div className={`absolute bottom-[36%] left-7 w-5 h-14 bg-blue-900 rounded-sm shadow-sm border-l border-white/10 transition-transform duration-300 ${touched ? '-translate-y-4' : ''}`} />
+                <div className="absolute bottom-[38%] left-[3.25rem] w-4 h-10 bg-green-800 rounded-sm transform rotate-2 shadow-sm border-l border-white/10" />
 
-            {/* Pot on top shelf (Shelf 0 sort of) */}
+                {/* Books - Shelf 2 (Middle) */}
+                <div className="absolute bottom-[66%] right-4 w-12 h-3 bg-yellow-700 rounded-sm shadow-sm" /> {/* Lying down book */}
+                <div className="absolute bottom-[66%] left-4 w-3 h-10 bg-purple-800 rounded-sm shadow-sm" />
 
-            {/* Pop-up Book */}
-            {touched && <div className="absolute top-[-24px] left-1/2 -translate-x-1/2 text-xs bg-white px-2 py-1 rounded shadow-md animate-fade-out-up whitespace-nowrap z-50">📖 Reading...</div>}
+                {/* Pop-up Book */}
+                {touched && <div className="absolute top-[-24px] left-1/2 -translate-x-1/2 text-xs bg-white px-2 py-1 rounded shadow-md animate-fade-out-up whitespace-nowrap z-50">📖 Reading...</div>}
+            </div>
+
+            {/* RIGHT FACE (Thickness) */}
+            <div className="absolute right-0 top-0 w-[20px] h-full bg-[#3E2723] origin-right transform rotateY(90deg)" />
+
+            {/* TOP FACE (Depth) */}
+            <div className="absolute top-0 left-0 w-full h-[20px] bg-[#4E342E] origin-top transform rotateX(-90deg)" />
         </div>
     );
 };
@@ -175,7 +185,7 @@ const InteractiveBookshelf = ({ onRead }) => {
 
 // --- COMPONENT DEFINITIONS (Hoisted) ---
 
-const RetroTV = ({ youtubeId, position, size, onDragStart, onResizeStart, onClose }) => (
+const RetroTV = ({ youtubeId, position, size, onDragStart, onResizeStart, onClose, isDragging }) => (
     <div
         className="absolute z-30 group origin-top-left shadow-2xl rounded-3xl pointer-events-auto"
         style={{
@@ -213,6 +223,8 @@ const RetroTV = ({ youtubeId, position, size, onDragStart, onResizeStart, onClos
                             className="opacity-80 contrast-125 saturate-150 pointer-events-auto"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         />
+                        {/* Dragging Overlay: Prevents iframe from stealing mouse events */}
+                        {isDragging && <div className="absolute inset-0 z-50 bg-transparent" />}
                     </div>
 
                     {/* Scanlines & Glare */}
@@ -274,7 +286,7 @@ const LoveBar = ({ level, max = 100 }) => {
     const percentage = Math.min(100, Math.max(0, (visualLevel / max) * 100));
 
     return (
-        <div className={`absolute top-6 left-6 z-[80] transition-transform duration-300 ${pulsing ? 'scale-110' : 'scale-100'}`}>
+        <div className={`absolute top-6 left-6 z-[80] transition-transform duration-300 ${pulsing ? 'scale-110' : 'scale-100'}`} style={{ transform: isMobile ? 'scale(0.7) translate(-20%, -20%)' : undefined }}>
             <div className="relative w-48 h-8 bg-[#E6D0B3] rounded-full shadow-xl border-2 border-white/50 overflow-hidden group">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 to-transparent" />
@@ -372,7 +384,7 @@ const PantryDrawer = ({ inventory, isOpen, onClose, onFeed, onDecorate }) => {
                 {Object.keys(grouped).length === 0 ? (
                     <div className="text-center py-10 text-stone-400 font-serif italic">The pantry is empty... (Catch something!)</div>
                 ) : (
-                    <div className="grid grid-cols-5 md:grid-cols-8 gap-4 max-h-48 overflow-y-auto p-2">
+                    <div className="grid grid-cols-4 md:grid-cols-8 gap-4 max-h-48 overflow-y-auto p-2">
                         {Object.entries(grouped).map(([item, count]) => (
                             <div key={item} className="relative group">
                                 <button
@@ -551,7 +563,7 @@ const generateMochiThought = (bond, sanity, weather, isWitchingHour) => {
     return pool[Math.floor(Math.random() * pool.length)];
 };
 
-const CatRoomContent = () => {
+const CatRoomContent = ({ isMobile }) => {
     // --- CONFIG ---
     const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
     const MODEL_NAME = "mistralai/devstral-2512:free";
@@ -564,6 +576,7 @@ const CatRoomContent = () => {
     const [isWalking, setIsWalking] = useState(false);
     const [isBooped, setIsBooped] = useState(false); // Physics state (Squash/Stretch)
     const [direction, setDirection] = useState(1); // 1 = Right, -1 = Left
+    const [isChatting, setIsChatting] = useState(false);
 
     // START: NAMING SYSTEM
     const [catName, setCatName] = useState(() => localStorage.getItem('catName') || 'Mochi');
@@ -576,6 +589,10 @@ const CatRoomContent = () => {
     const [mochiState, setMochiState] = useState('idle');
     const [isLoading, setIsLoading] = useState(false);
 
+    // --- REFS: PERFORMANCE ---
+    const particlesRef = useRef([]);
+    const canvasRef = useRef(null);
+
     // --- STATE: META & REALITY ---
     const [isTabActive, setIsTabActive] = useState(true);
     const [roomMessy, setRoomMessy] = useState(false);
@@ -583,7 +600,8 @@ const CatRoomContent = () => {
     const [weather, setWeather] = useState('clear');
     // const [isWitchingHour, setIsWitchingHour] = useState(false); // Replaced by derived state
     const [resetBtnPos, setResetBtnPos] = useState({ x: 0, y: 0 });
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 }); // Mouse tracking
+    // Mouse tracking state removed for performance optimization
+
     const [eyeTrackingEnabled, setEyeTrackingEnabled] = useState(false); // Toggle tracking
 
     // --- STATE: PROGRESSION & PSYCHOLOGY (With Persistence) ---
@@ -714,7 +732,6 @@ const CatRoomContent = () => {
         if (lastVisit && now - parseInt(lastVisit) > 24 * 60 * 60 * 1000) {
             // User left for > 24 hours
             setSanity(10); // Punish
-            setSkin('glitch'); // Devolve
             setMochiThought("You left me alone in the dark...");
         }
         localStorage.setItem('last_visit', now.toString());
@@ -778,8 +795,8 @@ const CatRoomContent = () => {
                 });
             }
 
-            // Mouse Tracking for Mochi
-            setMousePos({ x: e.clientX, y: e.clientY });
+            // Mouse Tracking for Mochi (Ref only, no re-renders)
+            mousePosRef.current = { x: e.clientX, y: e.clientY };
         };
 
         const handleMouseUp = () => {
@@ -1012,7 +1029,8 @@ const CatRoomContent = () => {
     // --- MOCHI WANDERING LOGIC (Sophisticated Decision Loop) ---
     // --- MOCHI WANDERING & REACTION LOGIC ---
     const mousePosRef = useRef({ x: 0, y: 0 });
-    useEffect(() => { mousePosRef.current = mousePos; }, [mousePos]);
+    // Mouse sync effect removed
+
 
     // Movement Helper (Ref to access state in timeouts)
     const triggerMovement = (targetPos, speedFactor, activeState = 'walking') => {
@@ -1130,7 +1148,6 @@ const CatRoomContent = () => {
 
     // --- PHYSICS LOOT & PARTICLES ---
     const [droppedLoot, setDroppedLoot] = useState([]); // { id, item, x, y }
-    const [particles, setParticles] = useState([]); // { id, x, y, type, life, velX, velY, color }
 
     // THE PARTICLE ENGINE (Game Loop)
     useEffect(() => {
@@ -1142,15 +1159,21 @@ const CatRoomContent = () => {
             const dt = (now - lastTime) / 16; // Normalizing to ~60fps
             lastTime = now;
 
-            setParticles(prev => {
-                if (prev.length === 0) return prev;
+            // Canvas Update Start
+            // Check skipped
 
-                return prev.map(p => {
+            // --- CANVAS PARTICLE LOOP ---
+            const canvas = canvasRef.current;
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear screen
+
+                // Update & Draw
+                particlesRef.current = particlesRef.current.map(p => {
                     // Gravity / Drift Logic
                     let newVelX = p.velX;
                     let newVelY = p.velY;
 
-                    // Type specific physics
                     if (p.type === 'heart') {
                         newVelY -= 0.05 * dt; // Float up
                         newVelX += (Math.random() - 0.5) * 0.1 * dt; // Jitter
@@ -1159,14 +1182,25 @@ const CatRoomContent = () => {
                         newVelX *= 0.95; // Drag
                     }
 
-                    return {
-                        ...p,
-                        x: p.x + newVelX * dt,
-                        y: p.y + newVelY * dt,
-                        life: p.life - 0.02 * dt // Decay
-                    };
+                    p.x += newVelX * dt;
+                    p.y += newVelY * dt;
+                    p.life -= 0.02 * dt;
+
+                    // Draw
+                    ctx.globalAlpha = Math.max(0, p.life);
+                    ctx.fillStyle = p.color;
+                    ctx.font = "20px monospace";
+
+                    if (p.type === 'heart') ctx.fillText("❤️", p.x, p.y);
+                    else if (p.type === 'sparkle') ctx.fillText("✨", p.x, p.y);
+                    else if (p.type === 'glitch') {
+                        ctx.fillStyle = "#0f0";
+                        ctx.fillText("ERR", p.x, p.y);
+                    }
+
+                    return p;
                 }).filter(p => p.life > 0);
-            });
+            }
 
             frameId = requestAnimationFrame(update);
         };
@@ -1176,7 +1210,7 @@ const CatRoomContent = () => {
     }, []);
 
     const spawnParticles = (x, y, type) => {
-        const count = type === 'heart' ? 8 : 12; // More juice
+        const count = type === 'heart' ? 8 : 12;
         const newParticles = [];
 
         for (let i = 0; i < count; i++) {
@@ -1195,7 +1229,8 @@ const CatRoomContent = () => {
             });
         }
 
-        setParticles(prev => [...prev, ...newParticles]);
+        // Push to Ref instead of State
+        particlesRef.current = [...particlesRef.current, ...newParticles];
     };
 
 
@@ -1387,36 +1422,22 @@ const CatRoomContent = () => {
                 }
             }
 
-            // Once fully received (or buffered enough), parse the JSON
-            // Note: Since we need valid JSON, streaming PARTIAL JSON is hard to display directly.
-            // For this specific 'JSON-only' prompt, we stick to buffering the full JSON 
-            // BUT we can fake the 'streaming' feel by typing it out once parsed.
-            // OR we change the prompt to NOT use JSON for the 'thought' part to stream it.
-            // DECISION: To support true streaming feel, we'll parse the final JSON then Typewrite it.
-            // Streaming the RAW JSON to the user looks bad.
-
-            let result;
+            // Once fully received, parse the final JSON
+            // We do NOT attempt to parse partial chunks to avoid SyntaxErrors
             try {
-                // Sanitize buffer in case of markdown wrapping
-                // We ONLY use buffer because accumulatedText contains the raw SSE stream (data: {...}) 
-                // which leads to false positives when regex matching for JSON.
                 const cleanBuffer = buffer.replace(/```json/g, '').replace(/```/g, '').trim();
-
-                // Attempt to extract JSON if there's surrounding text (though system prompt forbids it)
                 const jsonMatch = cleanBuffer.match(/\{[\s\S]*\}/);
+                const finalResult = JSON.parse(jsonMatch ? jsonMatch[0] : cleanBuffer);
 
-                result = JSON.parse(jsonMatch ? jsonMatch[0] : cleanBuffer);
+                setMochiState(finalResult.action || 'idle');
+                typewriteThought(finalResult.thought);
+                setBondLevel(prev => prev + 2);
             } catch (e) {
-                console.error("JSON Parse Error", e);
-                // Fallback if stream breaks JSON
-                result = { action: 'confused', thought: buffer || "..." };
+                console.error("JSON Parse Error (Final)", e);
+                // Fallback: If AI fails to give JSON, show raw text
+                setMochiState('confused');
+                typewriteThought(buffer || "...");
             }
-
-            setMochiState(result.action || 'idle');
-            // START TYPEWRITER EFFECT
-            typewriteThought(result.thought);
-            setBondLevel(prev => prev + 2);
-
         } catch (error) {
             if (error.name !== 'AbortError') {
                 console.error("API Error", error);
@@ -1453,7 +1474,7 @@ const CatRoomContent = () => {
             blur(${sanity > 40 ? 0 : (40 - sanity) * 0.05}px) 
             hue-rotate(${sanity < 30 ? (30 - sanity) : 0}deg)
         `,
-        transition: 'filter 1s ease-out'
+        transition: 'filter 1s ease-out, transform 1s ease-in-out'
     };
 
     // --- LOGIC: CYCLES ---
@@ -1484,8 +1505,8 @@ const CatRoomContent = () => {
     }, [mochiState, focusMode]);
 
     // PARALLAX CALCULATION
-    const px = (depth) => (mousePos.x - window.innerWidth / 2) * depth;
-    const py = (depth) => (mousePos.y - window.innerHeight / 2) * depth;
+    // PARALLAX CALCULATION (Removed for performance)
+
 
 
 
@@ -1494,6 +1515,14 @@ const CatRoomContent = () => {
 
     return (
         <div className="relative w-full h-full bg-[#111] overflow-hidden flex items-center justify-center font-sans select-none">
+            {/* --- GLOBAL SVG FILTERS --- */}
+            <svg className="absolute w-0 h-0 pointer-events-none">
+                <filter id="noise">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
+                    <feColorMatrix type="saturate" values="0" />
+                    <feComponentTransfer><feFuncA type="linear" slope="0.1" /></feComponentTransfer>
+                </filter>
+            </svg>
             {/* --- GLOBAL OVERLAYS (Screen Effects) --- */}
             {/* --- GLOBAL OVERLAYS (Screen Effects) --- */}
             <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.5)]" style={{ zIndex: LAYERS.OVERLAY }} />
@@ -1506,19 +1535,29 @@ const CatRoomContent = () => {
             />
             {rareFlash && <div className="absolute inset-0 bg-white mix-blend-difference animate-ping" style={{ zIndex: LAYERS.CURSOR }} />}
 
+
             {/* --- THE STAGE (16:9 Fixed Ratio) --- */}
             <div
                 id="room-container"
                 onClick={closeAllMenus}
-                className="relative aspect-video w-full max-h-screen bg-[#F0E6D2] shadow-2xl overflow-hidden filter-transition"
-                style={containerStyle}
+                className="relative w-full h-full max-h-[-webkit-fill-available] bg-[#F0E6D2] shadow-2xl overflow-hidden filter-transition"
+                style={{
+                    ...containerStyle,
+                    transition: 'transform 1s cubic-bezier(0.2, 0.8, 0.2, 1)', // Smooth Camera Pan
+                    transform: isChatting
+                        ? (isMobile
+                            ? `translate(${50 - mochiX}%, -10%) scale(1.5)` // Mobile: Center Cat (50 - mochiX) + Mild Zoom (1.5) + Mild Lift
+                            : 'scale(1.2) translateY(5%)') // Desktop: Mild Zoom (1.2)
+                        : 'scale(1) translateY(0)', // Zoom out when inactive
+                    transformOrigin: '50% 75%' // Pivot around floor center for consistent Y-zoom
+                }}
             >
 
                 {/* --- 1. BACKGROUND LAYER (Wall) --- */}
                 {/* --- 1. BACKGROUND LAYER (Wall) --- */}
                 <div className="absolute inset-0 pointer-events-none" style={{ zIndex: LAYERS.ROOM }}>
                     {/* Wall Color */}
-                    <div className={`absolute top-0 w-full h-[65%] transition-colors duration-2000 ${isNight ? 'bg-[#2D2D3A]' : 'bg-[#F0E6D2]'}`}>
+                    <div className={`absolute w-full h-[65%] transition-colors duration-2000 ${isNight ? 'bg-[#2D2D3A]' : 'bg-[#F0E6D2]'}`} style={{ top: isMobile ? '-5%' : '0%' }}>
 
                         {/* DECOR: Hanging Lantern (New Polish) */}
                         <HangingLantern />
@@ -1567,14 +1606,18 @@ const CatRoomContent = () => {
                     {/* Floor (The Stage - Thickened) */}
                     <div className={`absolute bottom-[-5%] left-1/2 -translate-x-1/2 w-[120%] h-[40%] floor-stage shadow-2xl transition-colors duration-2000 ${isNight ? 'bg-[#3E3E4E]' : 'bg-[#E6D0B3]'} border-t-[16px] border-[#D4C3A3]`} />
 
-                    <div className="absolute bottom-[25%] left-[75%] pointer-events-auto transform scale-150 origin-bottom z-20"><Plant /></div>
-                    <div className={`absolute bottom-[10%] left-[15%] pointer-events-auto transform scale-150 origin-bottom z-20 transition-opacity duration-300 ${mochiState === 'drinking' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                    <div className={`absolute bottom-[25%] left-[75%] pointer-events-auto transform ${isMobile ? 'scale-100' : 'scale-150'} origin-bottom z-20`}><Plant /></div>
+                    <div className={`absolute pointer-events-auto transform ${isMobile ? 'scale-100' : 'scale-150'} origin-bottom z-20 transition-opacity duration-300 ${mochiState === 'drinking' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                        style={{
+                            bottom: isMobile ? '45%' : '10%', // On shelf (mobile) vs On floor (desktop)
+                            left: isMobile ? '5%' : '15%'
+                        }}>
                         <CoffeeMug onClick={async (e) => {
                             playSound('click_high_sanity');
                             spawnParticles(e.clientX, e.clientY, 'sparkle');
 
                             // 1. Walk to the Mug (approx 15%)
-                            await triggerMovement(15, 25, 'walking');
+                            await triggerMovement(isMobile ? 5 : 15, 25, 'walking');
 
                             // 2. Drink
                             setMochiState('drinking');
@@ -1593,8 +1636,9 @@ const CatRoomContent = () => {
                     {/* Rug */}
                     {/* Rug (Styled Area Rug) */}
                     <div
-                        className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[60%] h-[30%] pointer-events-none opacity-90"
+                        className={`absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[60%] pointer-events-none opacity-90 transition-[height] duration-500`}
                         style={{
+                            height: isMobile ? '45%' : '30%',
                             transform: 'perspective(1000px) rotateX(60deg) translateY(20px)',
                             transformStyle: 'preserve-3d'
                         }}
@@ -1616,20 +1660,34 @@ const CatRoomContent = () => {
 
                     {/* NEW: Cozy Furniture (Resized for Scale) */}
 
-                    <div className="absolute bottom-[22%] left-[20%] pointer-events-auto z-20 origin-bottom transform scale-[1.9]">
+                    <div className={`absolute bottom-[22%] z-20 origin-bottom transform ${isMobile ? 'scale-[1.1]' : 'scale-[1.9]'} pointer-events-auto transition-[left] duration-500`} style={{ left: isMobile ? '2%' : '20%' }}>
                         <InteractiveBookshelf onRead={() => { closeAllMenus(); setShowLetter(true); }} />
                     </div>
 
                     {/* Floor Lamp */}
+                    {/* Floor Lamp (3D Extruded) */}
                     <div
-                        className="absolute bottom-[22%] right-[12%] flex flex-col items-center w-24 group cursor-pointer origin-bottom hover:scale-105 transition-transform pointer-events-auto transform scale-150"
-                        onClick={() => { setLampOn(!lampOn); spawnParticles(mousePos.x, mousePos.y, 'spark'); }}
+                        className={`absolute bottom-[22%] right-[12%] flex flex-col items-center w-24 group cursor-pointer origin-bottom hover:scale-105 transition-transform pointer-events-auto transform ${isMobile ? 'scale-100' : 'scale-150'}`}
+                        style={{ transformStyle: 'preserve-3d' }}
+                        onClick={(e) => { setLampOn(!lampOn); spawnParticles(e.clientX, e.clientY, 'spark'); }}
                     >
-                        <div className={`w-16 h-12 bg-[#FFECB3] rounded-t-3xl border-2 border-[#FFE082] relative z-20 transition-all duration-300 ${lampOn ? 'shadow-[0_0_120px_rgba(255,236,179,0.9)] bg-yellow-100' : 'bg-stone-400 opacity-50'}`}>
+                        {/* Shade (Cone/Cylinder approximation) */}
+                        <div className={`relative w-20 h-16 bg-[#FFECB3] rounded-t-3xl border-2 border-[#FFE082] z-20 transition-all duration-300 ${lampOn ? 'shadow-[0_0_120px_rgba(255,236,179,0.9)] bg-yellow-100' : 'bg-stone-400 opacity-50'}`} style={{ transform: 'translateZ(20px)' }}>
+                            {/* Top Face */}
+                            <div className="absolute top-0 left-0 w-full h-[15px] bg-[#FFE082] rounded-[50%] origin-top -translate-y-1/2 opacity-50" />
                             <div className="absolute bottom-[-32px] left-1/2 -translate-x-[2px] w-1.5 h-1.5 rounded-full bg-red-500" />
                         </div>
-                        <div className="w-1 h-48 bg-[#3E2723]" />
-                        <div className="w-12 h-4 bg-[#3E2723] rounded-t-lg" />
+
+                        {/* Stand (Pole) */}
+                        <div className="w-2 h-48 bg-[#3E2723] relative" style={{ transform: 'translateZ(10px)' }}>
+                            {/* Side face for depth */}
+                            <div className="absolute right-[-2px] top-0 w-[2px] h-full bg-[#2E1D18] origin-right transform rotateY(90deg)" />
+                        </div>
+
+                        {/* Base (Cylinder) */}
+                        <div className="relative w-16 h-6 bg-[#3E2723] rounded-[50%] -mt-2 z-10 shadow-lg" style={{ transform: 'rotateX(60deg)' }}>
+                            <div className="absolute inset-0 rounded-[50%] border-4 border-[#2E1D18]" />
+                        </div>
                     </div>
 
                     {/* TV Player (Retro Ghibli Style) */}
@@ -1638,6 +1696,7 @@ const CatRoomContent = () => {
                             youtubeId={youtubeId}
                             position={videoPos}
                             size={videoSize}
+                            isDragging={isDraggingTV}
                             onDragStart={(e) => {
                                 setIsDraggingTV(true);
                                 dragOffset.current = { x: e.clientX - videoPos.x, y: e.clientY - videoPos.y };
@@ -1655,6 +1714,13 @@ const CatRoomContent = () => {
                         <LootItem key={loot.id} loot={loot} onCollect={collectLoot} />
                     ))}
 
+                    {/* SPOTLIGHT OVERLAY (Internal - Covers Background/Furniture but behind Mochi) */}
+                    {isChatting && isMobile && (
+                        <div className="absolute inset-0 bg-black z-[75] pointer-events-none transition-opacity duration-500 animate-fade-in"
+                            style={{ transform: 'scale(5)' }} /* Massive scale to cover pan areas */
+                        />
+                    )}
+
                     {/* MOCHI (THE ENTITY) */}
                     <div
                         onClick={(e) => {
@@ -1668,9 +1734,9 @@ const CatRoomContent = () => {
                         }}
                         style={{
                             left: `${mochiX}%`,
-                            transform: `translateX(-50%) scaleX(${direction}) scale(${mochiState === 'drinking' ? 1.2 : 1})`, // Z-axis simulation (Scale)
+                            transform: `translateX(-50%) scaleX(${direction}) scale(${mochiState === 'drinking' ? 1.2 : (isMobile ? 0.9 : 1)})`, // Reduced Mobile Scale (1.5 -> 0.9)
                             transition: isWalking ? `left ${moveDuration} linear` : 'left 0.5s ease-out, bottom 0.5s ease-out, transform 0.5s ease-out',
-                            zIndex: mochiState === 'drinking' ? LAYERS.UI_WORLD + 10 : LAYERS.ENTITIES, // Z-axis simulation (Layer)
+                            zIndex: (isChatting && isMobile) ? 80 : (mochiState === 'drinking' ? LAYERS.UI_WORLD + 10 : LAYERS.ENTITIES), // Spotlight Elevation
                             bottom: mochiState === 'drinking' ? '12%' : '25%' // Y-axis transform (Move down)
                         }}
                         className={`absolute cursor-pointer group origin-bottom pointer-events-auto`}
@@ -1685,7 +1751,13 @@ const CatRoomContent = () => {
                     {/* Thought Bubble - Follows MochiX */}
                     {/* Thought Bubble - Anchored near head with tail */}
                     {mochiThought && (
-                        <div className="absolute bottom-[230px] z-50 pointer-events-none transition-all duration-1000 ease-out" style={{ left: `${mochiX}%`, transform: 'translateX(-50%)' }}>
+                        <div className={`absolute pointer-events-none transition-all duration-1000 ease-out`}
+                            style={{
+                                left: `${mochiX}%`,
+                                bottom: isMobile ? (isChatting ? '40%' : '280px') : '230px', // Closer to cat (40%) but high enough to clear head
+                                transform: 'translateX(-50%)',
+                                zIndex: isChatting && isMobile ? 90 : 50 // Above Overlay
+                            }}>
                             <div className={`relative animate-pop-elastic px-4 py-3 rounded-2xl shadow-xl max-w-[200px] text-center border-2 ${isWitchingHour ? 'bg-black text-red-500 border-red-500' : 'bg-white text-[#4A403A] border-[#EFEBE9]'}`}>
                                 <p className="text-sm font-bold font-serif leading-snug">{mochiThought}</p>
                                 {/* Tail */}
@@ -1695,9 +1767,8 @@ const CatRoomContent = () => {
                     )}
                 </div>
 
-                {/* Sticky Wall List (Interactive) - Moved Inside for 16:9 Scaling */}
-                <div className="absolute inset-0 pointer-events-none" style={{ zIndex: LAYERS.UI_WORLD || 40 }}>
-                    <StickyWallList />
+                <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${isChatting && isMobile ? 'opacity-0' : 'opacity-100'}`} style={{ zIndex: LAYERS.UI_WORLD || 40 }}>
+                    <StickyWallList isMobile={isMobile} />
                 </div>
             </div>
 
@@ -1712,28 +1783,20 @@ const CatRoomContent = () => {
             {/* --- UI OVERLAYS (Fixed) --- */}
 
             {/* Particles */}
-            {/* PARTICLES (Game Engine Render) */}
-            {
-                particles.map(p => (
-                    <div
-                        key={p.id}
-                        className="fixed pointer-events-none z-[100] will-change-transform"
-                        style={{
-                            left: p.x,
-                            top: p.y,
-                            opacity: p.life,
-                            transform: `scale(${p.life})`
-                        }}
-                    >
-                        {p.type === 'heart' && <Heart fill={p.color} className="text-pink-500 drop-shadow-sm" size={24} />}
-                        {p.type === 'sparkle' && <Sparkles className="text-yellow-400 drop-shadow-sm" size={20} />}
-                        {p.type === 'glitch' && <span className="text-green-500 font-mono text-xs">ERR</span>}
-                    </div>
-                ))
-            }
+            {/* PARTICLES (Canvas Render) */}
+            <canvas
+                ref={canvasRef}
+                width={window.innerWidth}
+                height={window.innerHeight}
+                className="fixed inset-0 pointer-events-none z-[100]"
+            />
 
             {/* UI: Unified Status Card (Replaces LoveBar, Clock, Calendar) */}
-            <StatusCard loveLevel={bondLevel} catName={catName} onRename={updateCatName} />
+            <div className={`transition-opacity duration-300 ${isChatting && isMobile ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                <StatusCard loveLevel={bondLevel} catName={catName} onRename={updateCatName} isMobile={isMobile} />
+            </div>
+
+
 
             {showLetter && <PhilosophicalLetter onClose={() => setShowLetter(false)} />}
 
@@ -1759,88 +1822,134 @@ const CatRoomContent = () => {
                 inventory={inventory}
                 isOpen={showPantry}
                 onClose={() => setShowPantry(false)}
-                onFeed={handlePantryFeed}
+                onFeed={(item, pos) => { playSound('click_high_sanity'); handlePantryFeed(item, pos); }}
             />
 
-            {/* Controls (Bottom Dock - Scattered Toys Style with Contrast) */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-6 animate-slide-up pointer-events-auto" style={{ zIndex: 90 }}>
+            {/* Controls (Bottom Dock - Anchored Input Version) */}
+            <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 w-[95%] max-w-3xl animate-slide-up pointer-events-auto transition-opacity duration-300 ${isChatting && isMobile ? 'opacity-100 z-[90]' : 'opacity-100 z-50'}`}>
 
-                {/* Focus Mode */}
-                <button onClick={(e) => { e.stopPropagation(); closeAllMenus(); toggleFocusMode(); }} title="Focus Mode" className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode ? 'bg-red-500 text-white border-red-700 shadow-[0_4px_0_#990000]' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}>
-                    <Glasses size={24} strokeWidth={2.5} />
-                </button>
+                {/* 1. Anchored Input (Top of Dock) */}
+                <div className={`w-full max-w-sm group transition-all duration-500 hover:max-w-md`}>
+                    <div className={`relative flex items-center bg-white/60 backdrop-blur-md rounded-full border-t border-white/50 border-b border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.1)] transition-all duration-300 focus-within:scale-105 focus-within:shadow-[0_12px_40px_rgba(0,0,0,0.15)] focus-within:bg-white/80`}>
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={input}
+                            onFocus={() => setIsChatting(true)}
+                            onBlur={() => setIsChatting(false)}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && whisperToMochi()}
+                            placeholder={focusMode && strictMode ? "Silence..." : focusMode ? "studying..." : `whisper to ${catName.toLowerCase()}...`}
+                            disabled={focusMode && strictMode}
+                            className={`w-full bg-transparent text-left text-base outline-none placeholder:text-[#5D4037]/60 placeholder:font-serif transition-colors duration-300 text-[#3E2723] font-bold font-serif py-3 pl-6 pr-12 rounded-full`}
+                        />
 
-                {/* Music Menu */}
-                <div className="relative group">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            const wasOpen = showMusicMenu;
-                            closeAllMenus();
-                            if (!wasOpen) {
-                                setShowMusicMenu(true);
-                                initAudio();
-                            }
-                        }}
-                        title="Music Atmosphere"
-                        disabled={focusMode && strictMode}
-                        className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
-                    >
-                        <Headphones size={24} strokeWidth={2.5} />
-                    </button>
-                    {showMusicMenu && !strictMode && (
-                        <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm p-2 rounded-xl shadow-xl flex flex-col gap-2 w-32 animate-fade-in z-50 text-xs text-center border border-[#5D4037]/10" onClick={(e) => e.stopPropagation()}>
-                            <button onClick={() => setMusicVibe('lofi')} className="hover:bg-stone-100 p-2 rounded">Lo-Fi</button>
-                            <button onClick={() => setMusicVibe('hype')} className="hover:bg-stone-100 p-2 rounded">Hype</button>
-                            <button onClick={() => setMusicVibe('Sad')} className="hover:bg-stone-100 p-2 rounded">Sad</button>
-                            <button onClick={() => setMusicVibe(null)} className="hover:bg-stone-100 p-2 rounded text-red-400">Stop</button>
-                        </div>
-                    )}
+                        {/* Send Button */}
+                        <button
+                            onClick={whisperToMochi}
+                            className={`absolute right-1 w-10 h-10 bg-[#FFAB91] hover:bg-[#FF8A65] rounded-full flex items-center justify-center text-white transition-all transform hover:scale-110 active:scale-95 ${!input ? 'opacity-0 pointer-events-none scale-50' : 'opacity-100 scale-100'}`}
+                        >
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
                 </div>
 
-                {/* PANTRY TOGGLE (Fork & Knife) */}
-                <button onClick={(e) => { e.stopPropagation(); const wasOpen = showPantry; closeAllMenus(); if (!wasOpen) setShowPantry(true); }} title="Open Pantry" className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${showPantry ? 'bg-[#5D4037] text-white border-[#3E2723] shadow-[0_4px_0_#2E1D18]' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}>
-                    <Utensils size={24} strokeWidth={2.5} />
-                </button>
+                {/* 2. Dock Buttons (Row Below) */}
+                <div className={`flex flex-wrap justify-center gap-3 md:gap-4 transition-all duration-300 ${isChatting && isMobile ? 'opacity-0 pointer-events-none h-0 overflow-hidden' : 'opacity-100'}`}>
 
-
-
-                {/* Cinema Mode */}
-                <div className="relative">
-                    <button
-                        onClick={(e) => { e.stopPropagation(); closeAllMenus(); setShowCinemaInput(!showCinemaInput); }}
-                        title="TV Mode"
-                        disabled={focusMode && strictMode}
-                        className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
-                    >
-                        <PlayCircle size={24} strokeWidth={2.5} />
+                    {/* Focus Mode */}
+                    <button onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); closeAllMenus(); toggleFocusMode(); }} title="Focus Mode" className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode ? 'bg-red-500 text-white border-red-700 shadow-[0_4px_0_#990000]' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}>
+                        <Glasses size={24} strokeWidth={2.5} />
                     </button>
-                    {showCinemaInput && !strictMode && (
-                        <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-white p-2 rounded-xl shadow-xl flex gap-2 w-64 animate-pop-in z-[80] border border-[#5D4037]/10" onClick={(e) => e.stopPropagation()}>
-                            <input type="text" placeholder="YouTube Video ID" className="w-full text-xs p-2 bg-stone-100 rounded outline-none" onChange={(e) => { if (e.target.value.length === 11) { setYoutubeId(e.target.value); setShowCinemaInput(false); } }} />
-                        </div>
-                    )}
+
+                    {/* Music Menu */}
+                    <div className="relative group">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                playSound('click_low_sanity');
+                                const wasOpen = showMusicMenu;
+                                closeAllMenus();
+                                if (!wasOpen) {
+                                    setShowMusicMenu(true);
+                                    initAudio();
+                                }
+                            }}
+                            title="Music Atmosphere"
+                            disabled={focusMode && strictMode}
+                            className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
+                        >
+                            <Headphones size={24} strokeWidth={2.5} />
+                        </button>
+                        {showMusicMenu && !strictMode && (
+                            <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm p-2 rounded-xl shadow-xl flex flex-col gap-2 w-32 animate-fade-in z-50 text-xs text-center border border-[#5D4037]/10" onClick={(e) => e.stopPropagation()}>
+                                <button onClick={() => setMusicVibe('lofi')} className="hover:bg-stone-100 p-2 rounded">Lo-Fi</button>
+                                <button onClick={() => setMusicVibe('hype')} className="hover:bg-stone-100 p-2 rounded">Hype</button>
+                                <button onClick={() => setMusicVibe('Sad')} className="hover:bg-stone-100 p-2 rounded">Sad</button>
+                                <button onClick={() => setMusicVibe(null)} className="hover:bg-stone-100 p-2 rounded text-red-400">Stop</button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* PANTRY TOGGLE (Fork & Knife) */}
+                    <button onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); const wasOpen = showPantry; closeAllMenus(); if (!wasOpen) setShowPantry(true); }} title="Open Pantry" className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${showPantry ? 'bg-[#5D4037] text-white border-[#3E2723] shadow-[0_4px_0_#2E1D18]' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}>
+                        <Utensils size={24} strokeWidth={2.5} />
+                    </button>
+
+
+
+                    {/* Cinema Mode */}
+                    <div className="relative">
+                        <button
+                            onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); closeAllMenus(); setShowCinemaInput(!showCinemaInput); }}
+                            title="TV Mode"
+                            disabled={focusMode && strictMode}
+                            className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
+                        >
+                            <PlayCircle size={24} strokeWidth={2.5} />
+                        </button>
+                        {showCinemaInput && !strictMode && (
+                            <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-white p-2 rounded-xl shadow-xl flex gap-2 w-64 animate-pop-in z-[80] border border-[#5D4037]/10" onClick={(e) => e.stopPropagation()}>
+                                <input
+                                    type="text"
+                                    placeholder="Paste YouTube Link or ID..."
+                                    className="w-full text-xs p-2 bg-stone-100 rounded outline-none"
+                                    onClick={(e) => e.stopPropagation()}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        // Try to extract ID from URL or Raw String
+                                        // Supports: v=ID, youtu.be/ID, embed/ID, or just ID (11 chars)
+                                        const match = val.match(/(?:v=|youtu\.be\/|\/embed\/)([\w-]{11})/) || val.match(/^([\w-]{11})$/);
+                                        if (match && match[1]) {
+                                            setYoutubeId(match[1]);
+                                            setShowCinemaInput(false);
+                                        }
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Browser */}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); closeAllMenus(); setShowBrowser(true); }}
+                        title="Mochi Web"
+                        disabled={focusMode && strictMode}
+                        className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
+                    >
+                        <Globe size={24} strokeWidth={2.5} />
+                    </button>
+
+                    {/* Bubble Wrap */}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); playSound('click_low_sanity'); closeAllMenus(); setShowBubbleWrap(true); }}
+                        title="Stress Relief"
+                        disabled={focusMode && strictMode}
+                        className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
+                    >
+                        <Sparkles size={24} strokeWidth={2.5} />
+                    </button>
                 </div>
-
-                {/* Browser */}
-                <button
-                    onClick={(e) => { e.stopPropagation(); closeAllMenus(); setShowBrowser(true); }}
-                    title="Mochi Web"
-                    disabled={focusMode && strictMode}
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
-                >
-                    <Globe size={24} strokeWidth={2.5} />
-                </button>
-
-                {/* Bubble Wrap */}
-                <button
-                    onClick={(e) => { e.stopPropagation(); closeAllMenus(); setShowBubbleWrap(true); }}
-                    title="Stress Relief"
-                    disabled={focusMode && strictMode}
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 active:translate-y-1 shadow-[0_4px_0_#D4C5A9] active:shadow-none border border-[#E0D8C8] ${focusMode && strictMode ? 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none border-none' : 'bg-[#FAF5E6] text-[#5D4037] hover:bg-white'}`}
-                >
-                    <Sparkles size={24} strokeWidth={2.5} />
-                </button>
             </div>
 
             {/* Wall Decor (Placed Items) */}
@@ -1851,24 +1960,11 @@ const CatRoomContent = () => {
 
 
             {/* Input (Whisper) - Magic Bubble Style */}
-            <div className="absolute bottom-28 left-1/2 transform -translate-x-1/2 w-full max-w-sm z-[70] group transition-all duration-500 hover:max-w-md">
-                <div className="relative bg-[#FFFBF0]/80 backdrop-blur-xl rounded-[30px] border-2 border-white shadow-[0_0_25px_rgba(255,248,220,0.6)] transition-all duration-300 group-hover:bg-[#FFFBF0] group-hover:scale-105 group-focus-within:bg-white group-focus-within:scale-105 group-focus-within:shadow-[0_0_40px_rgba(255,236,179,0.8)]">
-                    <input
-                        ref={inputRef} type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && whisperToMochi()}
-                        placeholder={focusMode && strictMode ? "Silence..." : focusMode ? "studying..." : `whisper to ${catName.toLowerCase()}...`}
-                        disabled={focusMode && strictMode}
-                        className={`w-full bg-transparent text-center text-sm outline-none placeholder:text-[#5D4037]/40 placeholder:font-serif transition-colors duration-300 text-[#5D4037] font-bold font-serif py-4 px-6 rounded-[30px]`}
-                    />
-                    {/* Subtle Icon Indicator */}
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5D4037]/40 group-hover:text-[#F48FB1] group-focus-within:text-pink-500 transition-colors pointer-events-none animate-pulse">
-                        <MessageCircle size={18} />
-                    </div>
-                </div>
-            </div>
 
 
 
-            {showBrowser && <MiniBrowser onClose={() => setShowBrowser(false)} />}
+
+            {showBrowser && <MiniBrowser onClose={() => setShowBrowser(false)} playSound={playSound} />}
             {showBubbleWrap && <BubbleWrap onClose={() => setShowBubbleWrap(false)} />}
             {
                 showStudyConfig && (
@@ -1935,7 +2031,7 @@ const HangingLantern = () => {
     );
 };
 
-const StatusCard = ({ loveLevel, catName, onRename }) => {
+const StatusCard = ({ loveLevel, catName, onRename, isMobile }) => {
     const [time, setTime] = useState(new Date());
     const [isEditing, setIsEditing] = useState(false);
     const [tempName, setTempName] = useState(catName);
@@ -1956,107 +2052,98 @@ const StatusCard = ({ loveLevel, catName, onRename }) => {
     const hoursRatio = (minutesRatio + time.getHours()) / 12;
 
     return (
-        <div className="absolute top-[8%] left-[8%] z-30 flex flex-col items-center pointer-events-auto filter drop-shadow-xl select-none animate-sway-slow">
+        <div className={`absolute z-30 flex flex-col items-center pointer-events-auto filter drop-shadow-xl select-none  ${isMobile ? 'top-[5%] left-[2%] scale-[0.7] origin-top-left' : 'top-[8%] left-[8%] scale-100'}`}>
 
-            {/* 1. HANGING CLOCK */}
-            <div className="relative w-28 h-28 bg-[#FFF8E1] rounded-full border-[8px] border-[#5D4037] shadow-inner flex items-center justify-center z-10 transition-transform hover:scale-105">
-                {/* Face */}
-                {[...Array(12)].map((_, i) => (
-                    <div key={i} className="absolute w-1 h-2 bg-[#8D6E63]" style={{ transform: `rotate(${i * 30}deg) translateY(-42px)` }} />
-                ))}
-                {/* Hands */}
-                <div className="absolute w-1.5 h-8 bg-[#3E2723] rounded-full origin-bottom" style={{ transform: `rotate(${minutesRatio * 360}deg) translateY(-50%)`, bottom: '50%' }} />
-                <div className="absolute w-2 h-6 bg-[#3E2723] rounded-full origin-bottom" style={{ transform: `rotate(${hoursRatio * 360}deg) translateY(-50%)`, bottom: '50%' }} />
-                <div className="absolute w-0.5 h-10 bg-[#FF7043] rounded-full origin-bottom" style={{ transform: `rotate(${secondsRatio * 360}deg) translateY(-30%)`, bottom: '50%' }} />
-                <div className="absolute w-3 h-3 bg-[#5D4037] rounded-full z-20" />
-            </div>
+            {/* GROUP: The Entire "Cat Clock" Assembly (Compact Totem) */}
+            <div className="relative flex flex-col items-center">
 
-            {/* Chains connecting Clock to Name Sign */}
-            <div className="flex gap-12 -mt-2 z-0">
-                <div className="w-[2px] h-8 bg-[#A1887F]" />
-                <div className="w-[2px] h-8 bg-[#A1887F]" />
-            </div>
-
-            {/* 2. WOODEN NAME SIGN */}
-            <div className="relative bg-[#5D4037] border-2 border-[#3E2723] px-6 py-2 rounded-lg shadow-md transform -rotate-1 hover:rotate-0 transition-transform cursor-pointer" onClick={() => setIsEditing(true)}>
-                <div className="absolute top-[-10px] left-4 w-1 h-3 bg-[#A1887F] rounded-full" /> {/* Chain Link visual */}
-                <div className="absolute top-[-10px] right-4 w-1 h-3 bg-[#A1887F] rounded-full" />
-
-                {isEditing ? (
-                    <input
-                        className="bg-[#3E2723] text-[#FFE082] text-sm font-serif font-bold text-center outline-none w-24 rounded"
-                        value={tempName}
-                        onChange={(e) => setTempName(e.target.value)}
-                        onBlur={handleRename}
-                        onKeyDown={(e) => e.key === 'Enter' && handleRename()}
-                        autoFocus
-                    />
-                ) : (
-                    <span className="text-[#FFE082] font-serif font-bold text-base tracking-wider drop-shadow-md">{catName}</span>
-                )}
-            </div>
-
-            {/* Single Chain to Heart */}
-            <div className="w-[1px] h-6 bg-[#A1887F] -mt-1" />
-
-            {/* 3. GLASS HEART VIAL (Love Meter) */}
-            <div className="relative w-12 h-12">
-                {/* Glass Container */}
-                <Heart size={48} className="text-[#3E2723] fill-black/20 stroke-[3px]" />
-
-                {/* Liquid Mask */}
-                <div className="absolute inset-0 flex items-end justify-center overflow-hidden" style={{ clipPath: 'path("M24 43.12l-2.9-2.61C10.74 31.18 4 25.1 4 17.61 4 11.5 8.76 6.75 14.88 6.75c3.42 0 6.69 1.58 8.88 4.13h.48C26.43 8.33 29.7 6.75 33.12 6.75 39.24 6.75 44 11.5 44 17.61c0 7.49-6.74 13.57-17.1 22.9L24 43.12z")', transform: 'scale(1)' }}>
-                    {/* The Liquid */}
-                    <div
-                        className="w-full bg-pink-500 transition-all duration-1000 ease-in-out relative opacity-90"
-                        style={{ height: `${loveLevel}%` }}
-                    >
-                        <div className="absolute top-0 w-full h-2 bg-pink-300 opacity-50 animate-wave" /> {/* Surface shimmer */}
+                {/* 1. THE TAIL (Pendulum) - Tucked behind, sticking out bottom */}
+                <div className="absolute top-24 w-full flex justify-center z-0">
+                    <div className="relative origin-top animate-cat-tail" style={{ transformOrigin: 'top center' }}>
+                        {/* Shorter Tail */}
+                        <div className="w-4 h-24 bg-[#D7CCC8] rounded-full border-2 border-[#5D4037]" />
+                        {/* Heart Hanging Higher */}
+                        <div className="absolute -bottom-4 -left-3 shadow-md transform rotate-[-10deg]">
+                            {/* Glass Container Heart */}
+                            <div className="relative w-10 h-10">
+                                <Heart size={40} className="text-[#3E2723] fill-black/20 stroke-[3px]" />
+                                <div className="absolute inset-0 flex items-end justify-center overflow-hidden" style={{ clipPath: 'path("M20 35.9l-2.4-2.1C8.9 25.9 3.3 20.9 3.3 14.7 3.3 9.6 7.3 5.6 12.4 5.6c2.8 0 5.6 1.3 7.4 3.4h.4c1.8-2.1 4.6-3.4 7.4-3.4 5.1 0 9.1 4 9.1 9.1 0 6.2-5.6 11.2-14.2 19L20 35.9z")', transform: 'scale(1)' }}>
+                                    <div className="w-full bg-pink-500 transition-all duration-1000 ease-in-out relative opacity-90" style={{ height: `${loveLevel}%` }}>
+                                        <div className="absolute top-0 w-full h-1 bg-pink-300 opacity-50 animate-wave" />
+                                    </div>
+                                </div>
+                                <div className="absolute top-2 left-2 w-2 h-2 bg-white/40 rounded-full blur-[1px]" />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* Reflection */}
-                <div className="absolute top-3 left-3 w-3 h-3 bg-white/40 rounded-full blur-[1px]" />
-            </div>
+                {/* 2. THE CLOCK BODY (Head) */}
+                <div className="relative z-20">
+                    {/* Ears */}
+                    <div className="absolute -top-3 -left-3 w-10 h-10 bg-[#FFECB3] rounded-3xl rotate-[-20deg] border-[6px] border-[#5D4037] z-[-1]" />
+                    <div className="absolute -top-3 -right-3 w-10 h-10 bg-[#FFECB3] rounded-3xl rotate-[20deg] border-[6px] border-[#5D4037] z-[-1]" />
 
+                    {/* Squircle Body (Texture Applied) */}
+                    <div className="relative w-32 h-32 bg-[#FFECB3] rounded-[45px] border-[6px] border-[#5D4037] shadow-inner flex items-center justify-center overflow-hidden">
+                        {/* Texture */}
+                        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-black to-transparent pointer-events-none mix-blend-multiply" style={{ filter: 'url(#noise)' }} />
+
+                        {/* Clock Face Markers */}
+                        {[0, 3, 6, 9].map((hour) => (
+                            <div key={hour} className="absolute w-2 h-2 bg-[#8D6E63]/40 rounded-full"
+                                style={{ transform: `rotate(${hour * 30}deg) translate(0, -50px)` }} />
+                        ))}
+
+                        {/* Hands */}
+                        <div className="absolute w-2.5 h-9 bg-[#5D4037] rounded-full origin-bottom" style={{ transform: `rotate(${hoursRatio * 360}deg) translateY(-50%)`, bottom: '50%' }} />
+                        <div className="absolute w-1.5 h-11 bg-[#8D6E63] rounded-full origin-bottom" style={{ transform: `rotate(${minutesRatio * 360}deg) translateY(-50%)`, bottom: '50%' }} />
+                        <div className="absolute w-1 h-12 bg-[#FF7043] rounded-full origin-bottom" style={{ transform: `rotate(${secondsRatio * 360}deg) translateY(-30%)`, bottom: '50%' }}>
+                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#FF7043] rounded-full" />
+                        </div>
+
+                        {/* Nose (Pivot) */}
+                        <div className="absolute w-3 h-2.5 bg-[#FFAB91] rounded-full z-30 shadow-sm mt-0.5" />
+                    </div>
+                </div>
+
+
+                {/* 3. NAME SIGN (Held by paws) - Paws on TOP */}
+                <div className="relative -mt-6 z-30"> {/* Negative margin to overlap */}
+                    {/* Paws (Directly on top margin) */}
+                    <div className="absolute -top-1 left-4 w-5 h-6 bg-[#FFECB3] rounded-full border-[3px] border-[#5D4037] z-40 transform -rotate-12" />
+                    <div className="absolute -top-1 right-4 w-5 h-6 bg-[#FFECB3] rounded-full border-[3px] border-[#5D4037] z-40 transform rotate-12" />
+
+                    <div
+                        className="relative bg-gradient-to-b from-[#8D6E63] to-[#6D4C41] border-[3px] border-[#4E342E] px-6 py-2 rounded-lg shadow-lg transform rotate-[-1deg] hover:rotate-0 transition-transform cursor-pointer min-w-[120px] text-center"
+                        onClick={() => setIsEditing(true)}
+                    >
+                        {/* Wood Texture Detail */}
+                        <div className="absolute inset-0 border border-[#A1887F]/30 rounded-md pointer-events-none" style={{ filter: 'url(#noise)' }} />
+
+                        {isEditing ? (
+                            <input
+                                className="bg-[#4E342E] text-[#FFE082] text-sm font-serif font-bold text-center outline-none w-20 rounded"
+                                value={tempName}
+                                onChange={(e) => setTempName(e.target.value)}
+                                onBlur={handleRename}
+                                onKeyDown={(e) => e.key === 'Enter' && handleRename()}
+                                autoFocus
+                            />
+                        ) : (
+                            <span className="text-[#FFE082] font-serif font-bold text-lg tracking-wide drop-shadow-sm">{catName}</span>
+                        )}
+                    </div>
+                </div>
+
+            </div>
         </div>
     );
+
 };
 
 // --- THE ENTITY AVATAR (REFATACORED CHIBI) ---
-const MochiAvatar = ({ state, isWitchingHour, skin, musicVibe, mousePos }) => {
-    // EYE TRACKING (Pupils Only)
-    const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 });
 
-    useEffect(() => {
-        if (!mousePos) { setPupilOffset({ x: 0, y: 0 }); return; }
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-        // Clamp heavily trackiong for pupils
-        setPupilOffset({
-            x: Math.max(-4, Math.min(4, (mousePos.x - centerX) / 30)),
-            y: Math.max(-2, Math.min(2, (mousePos.y - centerY) / 30))
-        });
-    }, [mousePos]);
-
-    const getColor = (type) => {
-        if (skin === 'void') return type === 'body' ? '#1a1a1a' : '#333';
-        if (skin === 'crt') return type === 'body' ? '#003300' : '#00ff00';
-        if (isWitchingHour) return type === 'body' ? '#221' : '#f00';
-        // STRAWBERRY MILK PALETTE
-        return type === 'body' ? '#FFFDD0' : '#4A3B2A';
-    };
-
-    return (
-        <div className={`relative w-64 h-64 drop-shadow-xl transition-transform duration-300`}>
-            {/* Render the appropriate Kawaii Cat based on state/skin */}
-            <div className="w-full h-full transform scale-150 origin-bottom">
-                {/* For now, we default to the Mochi Blob as it's the main character */}
-                {state === 'sleep' || state === 'sleepy' ? <CatOrangeSleeping /> : <CatMochiBlob />}
-            </div>
-        </div>
-    );
-};
 
 // --- PHASE 4: UTILITY COMPONENTS ---
 
@@ -2100,7 +2187,7 @@ const CalendarWidget = ({ expanded, onToggle }) => {
     );
 };
 
-const MiniBrowser = ({ onClose }) => {
+const MiniBrowser = ({ onClose, playSound }) => {
     const [page, setPage] = useState('home'); // home, results, article
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
@@ -2108,7 +2195,8 @@ const MiniBrowser = ({ onClose }) => {
     const [loading, setLoading] = useState(false);
 
     // Config
-    const apiKey = "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";
+    // Config
+    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
     const MODEL_NAME = "mistralai/devstral-2512:free";
 
     const performSearch = async (e) => {
@@ -2118,7 +2206,7 @@ const MiniBrowser = ({ onClose }) => {
         setPage('results');
 
         try {
-            const prompt = `Generate 4 realistic search results for "${query}" in JSON format. Format: [{ "title": "...", "url": "...", "snippet": "..." }]. Make them slightly cat-themed or existential if possible, but mainly helpful.`;
+            const prompt = `Generate 4 realistic search results for "${query}" in JSON format. Format: [{"title": "...", "url": "...", "snippet": "..." }]. Make them slightly cat-themed or existential if possible, but mainly helpful.`;
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
@@ -2130,8 +2218,14 @@ const MiniBrowser = ({ onClose }) => {
             const data = await res.json();
             const content = data.choices[0].message.content;
             // Best effort extract JSON
+            // Best effort extract JSON
             const jsonStr = content.match(/\[.*\]/s)?.[0] || "[]";
-            setResults(JSON.parse(jsonStr));
+            try {
+                setResults(JSON.parse(jsonStr));
+            } catch (e) {
+                console.error("JSON Parse Error:", e);
+                setResults([]);
+            }
         } catch (err) {
             setResults([{ title: "Connection Error", url: "error://network", snippet: "Mochi chewed the cable." }]);
         } finally {
@@ -2162,15 +2256,15 @@ const MiniBrowser = ({ onClose }) => {
     };
 
     return (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[400px] bg-[#FDF6E3] rounded-xl shadow-2xl border-2 border-[#5D4037] overflow-hidden z-[100] animate-pop-in flex flex-col font-sans">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] md:w-[500px] h-[400px] bg-[#FDF6E3] rounded-xl shadow-2xl border-2 border-[#5D4037] overflow-hidden z-[100] animate-pop-in flex flex-col font-sans">
             {/* Browser Tools */}
             <div className="bg-[#EFEBE9] p-2 flex items-center gap-2 border-b border-[#5D4037]/20">
                 <div className="flex gap-1 mr-2">
-                    <div className="w-3 h-3 rounded-full bg-red-400 cursor-pointer hover:bg-red-500" onClick={onClose} />
+                    <div className="w-3 h-3 rounded-full bg-red-400 cursor-pointer hover:bg-red-500" onClick={() => { playSound?.('click_low_sanity'); onClose(); }} />
                     <div className="w-3 h-3 rounded-full bg-yellow-400" />
                     <div className="w-3 h-3 rounded-full bg-green-400" />
                 </div>
-                <button onClick={() => setPage('home')} className="text-xs hover:bg-gray-200 p-1 rounded">🏠</button>
+                <button onClick={() => { playSound?.('click_high_sanity'); setPage('home'); }} className="text-xs hover:bg-gray-200 p-1 rounded">🏠</button>
                 <input
                     className="flex-1 bg-white text-xs p-1 px-2 rounded-full border border-stone-300 outline-none"
                     value={query}
@@ -2414,11 +2508,10 @@ const WholesomeCatRoom = () => {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    if (isMobile) {
-        return <MobileBlocker />;
-    }
+    // --- RENDER: MOBILE GUARD (REMOVED) ---
+    // if (isMobile) { return <MobileBlocker />; }
 
-    return <CatRoomContent />;
+    return <CatRoomContent isMobile={isMobile} />;
 };
 
 export default WholesomeCatRoom;
